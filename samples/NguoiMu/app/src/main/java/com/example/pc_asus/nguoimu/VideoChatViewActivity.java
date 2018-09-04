@@ -34,7 +34,7 @@ public class VideoChatViewActivity extends AppCompatActivity implements  TextToS
     TextToSpeech tts;
     private final int REQ_CODE_SPEECH_INPUT = 100;
     TextView tv2;
-    Button btn_dangXuat;
+    Button btn_dangXuat,btn_thongTinTaiKhoan;
     private static final String LOG_TAG = VideoChatViewActivity.class.getSimpleName();
 
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
@@ -76,13 +76,15 @@ public class VideoChatViewActivity extends AppCompatActivity implements  TextToS
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.videochat_activity2);
+        setContentView(R.layout.activity_video_chat_view);
 
 //        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
 //            initAgoraEngineAndJoinChannel();
 //        }
 
         btn_dangXuat= findViewById(R.id.btn_dangXuat);
+        btn_thongTinTaiKhoan= findViewById(R.id.btn_tttk);
+
         tts= new TextToSpeech(this, this);
         tv2= (TextView) findViewById(R.id.tv_speak);
 
@@ -97,8 +99,16 @@ public class VideoChatViewActivity extends AppCompatActivity implements  TextToS
             @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(VideoChatViewActivity.this,MainActivity.class));
+                startActivity(new Intent(VideoChatViewActivity.this,SignInActivity.class));
                 finish();
+            }
+        });
+
+        btn_thongTinTaiKhoan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(VideoChatViewActivity.this,AccountSettingsActivity.class));
+
             }
         });
 

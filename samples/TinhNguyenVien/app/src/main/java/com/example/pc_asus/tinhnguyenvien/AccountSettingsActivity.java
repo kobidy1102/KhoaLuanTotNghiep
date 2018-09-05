@@ -1,18 +1,17 @@
-package com.example.pc_asus.nguoimu;
+package com.example.pc_asus.tinhnguyenvien;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -54,11 +53,11 @@ public class AccountSettingsActivity extends AppCompatActivity {
     ImageView img_avatar;
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
+    private boolean isSave;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     final StorageReference storageRef = storage.getReference();
     String nameImg;
     final String[] photoURL = new String[1];
-    boolean saved;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +75,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
         String uid= mCurrentUser.getUid();
-        mDatabase= FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid);
+        mDatabase= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Users").child(uid);
 
 
         final ProgressDialog dialog;
@@ -126,7 +125,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
 
 
-
+                isSave=true;
                 final ProgressDialog dialog;
                 dialog = new ProgressDialog(AccountSettingsActivity.this);
                 dialog.setMessage("      Đang lưu...");
@@ -154,12 +153,13 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Toast.makeText(AccountSettingsActivity.this, "Đã lưu!", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
-                        Log.e("abc","upload xong");
                         getLinkAvatar();
+
 
                     }
 
                 });
+
 
 
             }
@@ -282,14 +282,14 @@ public class AccountSettingsActivity extends AppCompatActivity {
     }
 
     private void getLinkAvatar(){
-        Log.e("abc","getlink");
+      //  Log.e("abc","getlink");
         storageRef.child(nameImg).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 photoURL[0]=uri.toString();
                 User user = new User(edt_name.getText().toString(),edt_email.getText().toString(),edt_phoneNumber.getText().toString(),photoURL[0]);
                 mDatabase.setValue(user);
-                Log.e("abc","get link xong");
+              //  Log.e("abc","get link xong");
 
             }
         }).addOnFailureListener(new OnFailureListener() {

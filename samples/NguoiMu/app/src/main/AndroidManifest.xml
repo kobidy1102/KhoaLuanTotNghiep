@@ -25,7 +25,11 @@
         </activity>
         <activity android:name=".VideoChatViewActivity" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".AccountSettingsActivity"></activity>
+        <activity android:name=".AccountSettingsActivity" />
+        <activity
+            android:name=".VideoChatActivity"
+            android:label="@string/title_activity_video_chat"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -17,34 +17,34 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     EditText edt_email,edt_password;
-    Button btn_dangNhap, btn_dangKy;
+    Button btn_signIn, btn_signUp;
     private FirebaseAuth mAuth;
 // ...
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_sign_in);
         // Intent intent= new Intent(MainActivity.this,VideoChatViewActivity.class);
         // startActivity(intent);
         edt_email = findViewById(R.id.edt_email);
         edt_password = findViewById(R.id.edt_password);
-        btn_dangNhap= findViewById(R.id.btn_dangNhap);
-        btn_dangKy= findViewById(R.id.btn_dangKi);
+        btn_signIn = findViewById(R.id.btn_dangNhap);
+        btn_signUp = findViewById(R.id.btn_dangKi);
         mAuth = FirebaseAuth.getInstance();
 
-        btn_dangKy.setOnClickListener(new View.OnClickListener() {
+        btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent= new Intent(MainActivity.this, SignUpActivity.class);
+                Intent intent= new Intent(SignInActivity.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });
 
-        btn_dangNhap.setOnClickListener(new View.OnClickListener() {
+        btn_signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dangNhap();
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         Log.e("abc","trang thai dang nhap "+currentUser);
         if(currentUser!=null) {
-            Intent intent= new Intent(MainActivity.this,Main2Activity.class);
+            Intent intent= new Intent(SignInActivity.this,VideoChatActivity.class);
             startActivity(intent);
             finish();
         }
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         final String password = edt_password.getText().toString().trim();
         Log.e("abc",email);
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(MainActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
         } else {
             dialog.show();
             mAuth.signInWithEmailAndPassword(email, password)
@@ -84,12 +84,12 @@ public class MainActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 dialog.dismiss();
                                 //     Toast.makeText(MainActivity.this, "Đăng Nhập Thành Công", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+                                Intent intent = new Intent(SignInActivity.this, VideoChatActivity.class);
                                 startActivity(intent);
                                 finish();
                             } else {
                                 dialog.dismiss();
-                                Toast.makeText(MainActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
 
                             }
 
@@ -100,4 +100,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
 

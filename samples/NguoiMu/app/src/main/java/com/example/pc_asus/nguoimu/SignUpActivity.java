@@ -60,7 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 Toast.makeText(SignUpActivity.this, "Đăng Ký Thành Công", Toast.LENGTH_SHORT).show();
 
-                                User user= new User(edt_name.getText().toString(),edt_email.getText().toString(), edt_phoneNumber.getText().toString(),"https://firebasestorage.googleapis.com/v0/b/map-82eb0.appspot.com/o/HOI.png?alt=media&token=42b16371-97b8-42e1-9887-20e7a546703d");
+                                User user= new User(edt_name.getText().toString(),edt_email.getText().toString(), edt_phoneNumber.getText().toString(),"https://firebasestorage.googleapis.com/v0/b/map-82eb0.appspot.com/o/generic-user-purple.png?alt=media&token=21815e8a-2bcd-477a-bf37-f6b382f0c409");
                                 FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
                                 String uid=currentUser.getUid();
                                 DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid);

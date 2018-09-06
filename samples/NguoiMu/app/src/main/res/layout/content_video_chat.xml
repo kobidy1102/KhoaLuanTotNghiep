@@ -8,4 +8,15 @@
     tools:context=".VideoChatActivity"
     tools:showIn="@layout/app_bar_video_chat">
 
+
+    <TextView
+        android:id="@+id/tv_tap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Chạm vào màn hình và nói"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
 </android.support.constraint.ConstraintLayout>

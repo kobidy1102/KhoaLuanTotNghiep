@@ -65,6 +65,10 @@ public class SignUpActivity extends AppCompatActivity {
                                 String uid=currentUser.getUid();
                                 DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Users").child(uid);
                                 mDatabase.setValue(user);
+
+                                Status status= new Status("1","1","0");
+                                DatabaseReference mDatabase2= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Status").child(uid);
+                                mDatabase2.setValue(status);
                                 finish();
 
                             } else {

@@ -80,7 +80,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
         final ProgressDialog dialog;
         dialog = new ProgressDialog(this);
-        dialog.setMessage("loading...");
+        dialog.setMessage("        Loading...");
         dialog.show();
 
         mDatabase.addValueEventListener(new ValueEventListener() {

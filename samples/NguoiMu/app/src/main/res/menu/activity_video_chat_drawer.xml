@@ -12,10 +12,14 @@
             android:id="@+id/nav_friends"
             android:icon="@drawable/ic_friends"
             android:title="Bạn Bè" />
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@drawable/ic_search"
+            android:title="Tìm Tình Nguyện Viên" />
 
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="">
         <menu>
             <item
                 android:id="@+id/nav_sign_out"

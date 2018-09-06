@@ -8,4 +8,23 @@
     tools:context=".VideoChatActivity"
     tools:showIn="@layout/app_bar_video_chat">
 
+    <ImageView
+        android:id="@+id/img_statusWithFriends"
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:color/transparent" />
+
+    <ImageView
+        android:id="@+id/img_statusWithAll"
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_marginBottom="56dp"
+        android:layout_marginStart="104dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:color/transparent" />
 </android.support.constraint.ConstraintLayout>

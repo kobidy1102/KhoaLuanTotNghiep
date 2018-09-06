@@ -1,10 +1,13 @@
 package com.example.pc_asus.tinhnguyenvien;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -32,6 +35,8 @@ public class VideoChatActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,10 +58,83 @@ public class VideoChatActivity extends AppCompatActivity
         final TextView tv_name=(TextView) headView.findViewById(R.id.tv_bar_name);
         final String[] photoURL = new String[1];
 
+//        sharedPreferences = getSharedPreferences("status", MODE_PRIVATE);
+//        final int[] status = {sharedPreferences.getInt("status", 1)};
+        final View imgStatusWithFriends =  findViewById(R.id.img_statusWithFriends);
+        final View imgStatusWithAll =  findViewById(R.id.img_statusWithAll);
+
+        final int[] status = new int[2];
+
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
-        String uid= mCurrentUser.getUid();
-        mDatabase= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Users").child(uid);
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        final String uid= mCurrentUser.getUid();
+        mDatabase= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien");
+
+        final ProgressDialog dialog;
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("        Loading...");
+        dialog.show();
+
+        mDatabase.child("Status").child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                 String s0= dataSnapshot.child("statusWithFriends").getValue().toString();
+                status[0]=Integer.parseInt(s0);
+                String s1= dataSnapshot.child("statusWithAll").getValue().toString();
+                status[1]=Integer.parseInt(s1);
+
+                if(status[0] ==1) {
+                    imgStatusWithFriends.setBackgroundResource(R.mipmap.tick);
+                }else imgStatusWithFriends.setBackgroundResource(R.mipmap.stop);
+
+                if(status[1] ==1) {
+                    imgStatusWithAll.setBackgroundResource(R.mipmap.tick);
+                }else imgStatusWithAll.setBackgroundResource(R.mipmap.stop);
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        imgStatusWithFriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(status[0] ==1) {
+                    imgStatusWithFriends.setBackgroundResource(R.mipmap.stop);
+                    status[0] =0;
+                }else {
+                    imgStatusWithFriends.setBackgroundResource(R.mipmap.tick);
+                    status[0] =1;
+
+                }
+                mDatabase.child("Status").child(uid).child("statusWithFriends").setValue(status[0]);
+            }
+        });
+
+
+        imgStatusWithAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(status[1] ==1) {
+                    imgStatusWithAll.setBackgroundResource(R.mipmap.stop);
+                    status[1] =0;
+                }else {
+                    imgStatusWithAll.setBackgroundResource(R.mipmap.tick);
+                    status[1] =1;
+
+                }
+                mDatabase.child("Status").child(uid).child("statusWithAll").setValue(status[1]);
+            }
+        });
+
+
+        mDatabase.child("Users").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 tv_name.setText(dataSnapshot.child("name").getValue().toString());
@@ -78,6 +156,12 @@ public class VideoChatActivity extends AppCompatActivity
 
             }
         });
+
+
+        Intent intent= new Intent(VideoChatActivity.this, CheckConnectionService.class);
+        startService(intent);
+        Log.e("connect"," service...");
+
     }
 
     @Override

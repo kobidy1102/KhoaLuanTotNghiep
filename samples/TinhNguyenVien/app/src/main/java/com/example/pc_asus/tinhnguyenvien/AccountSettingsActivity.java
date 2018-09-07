@@ -47,9 +47,9 @@ import java.util.Calendar;
 
 public class AccountSettingsActivity extends AppCompatActivity {
 
-    EditText edt_name,edt_email, edt_phoneNumber;
+    EditText edt_name, edt_phoneNumber;
     Button btn_choose, btn_camera,btn_save, btn_cancel;
-    TextView tv_resetPassword;
+    TextView tv_resetPassword,tv_email;
     ImageView img_avatar;
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
@@ -64,7 +64,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account_settings);
 
         edt_name=findViewById(R.id.edt_as_name);
-        edt_email= findViewById(R.id.edt_as_email);
+        tv_email= findViewById(R.id.tv_as_email);
         edt_phoneNumber= findViewById(R.id.edt_as_phoneNumber);
         btn_choose=findViewById(R.id.btn_as_choose);
         btn_camera= findViewById(R.id.btn_as_camera);
@@ -86,7 +86,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                edt_email.setText(dataSnapshot.child("email").getValue().toString());
+                tv_email.setText(dataSnapshot.child("email").getValue().toString());
                 edt_phoneNumber.setText(dataSnapshot.child("phoneNumber").getValue().toString());
                 edt_name.setText(dataSnapshot.child("name").getValue().toString());
                 photoURL[0] =dataSnapshot.child("photoURL").getValue().toString();
@@ -287,7 +287,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Uri uri) {
                 photoURL[0]=uri.toString();
-                User user = new User(edt_name.getText().toString(),edt_email.getText().toString(),edt_phoneNumber.getText().toString(),photoURL[0]);
+                User user = new User(edt_name.getText().toString(),tv_email.getText().toString(),edt_phoneNumber.getText().toString(),photoURL[0]);
                 mDatabase.setValue(user);
               //  Log.e("abc","get link xong");
 

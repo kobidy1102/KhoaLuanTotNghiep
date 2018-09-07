@@ -95,18 +95,18 @@ public class SearchTnvActivity extends AppCompatActivity implements SearchView.O
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                final Dialog dialog = new Dialog(SearchTnvActivity.this);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.dialog_add_friend);
+                    final Dialog dialog = new Dialog(SearchTnvActivity.this);
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setContentView(R.layout.dialog_add_friend);
 
-//                Window window = dialog.getWindow();
-//                WindowManager.LayoutParams wlp = window.getAttributes();
-//
-//                wlp.gravity = Gravity.RIGHT;
-//
-//                wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-//                window.setAttributes(wlp);
-                TextView tv_addFriend= (TextView) dialog.findViewById(R.id.tv_addFriend);
+    //                Window window = dialog.getWindow();
+    //                WindowManager.LayoutParams wlp = window.getAttributes();
+    //
+    //                wlp.gravity = Gravity.RIGHT;
+    //
+    //                wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+    //                window.setAttributes(wlp);
+                    TextView tv_addFriend= (TextView) dialog.findViewById(R.id.tv_addFriend);
                 TextView tv_close= (TextView) dialog.findViewById(R.id.tv_close);
                 tv_close.setOnClickListener(new View.OnClickListener() {
                     @Override

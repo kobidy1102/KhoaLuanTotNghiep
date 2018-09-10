@@ -28,7 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class VideoChatActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
@@ -37,7 +37,7 @@ public class VideoChatActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_chat);
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -155,7 +155,7 @@ public class VideoChatActivity extends AppCompatActivity
         });
 
 
-        Intent intent= new Intent(VideoChatActivity.this, CheckConnectionService.class);
+        Intent intent= new Intent(MainActivity.this, CheckConnectionService.class);
         startService(intent);
         Log.e("connect"," service...");
 
@@ -200,7 +200,7 @@ public class VideoChatActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_accountSetting) {
-            startActivity(new Intent(VideoChatActivity.this,AccountSettingsActivity.class));
+            startActivity(new Intent(MainActivity.this,AccountSettingsActivity.class));
          //    Toast.makeText(this, "settings", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_friends) {
@@ -208,7 +208,7 @@ public class VideoChatActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_sign_out) {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(VideoChatActivity.this,SignInActivity.class));
+            startActivity(new Intent(MainActivity.this,SignInActivity.class));
 
             mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(0);
             mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(0);

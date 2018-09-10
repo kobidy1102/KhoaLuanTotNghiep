@@ -37,7 +37,7 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private Vibrator vibrator;
 
-    private boolean checkStartCall=false;
+    private int checkStartCall=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +66,7 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
 
 
 
-
+        checkStartCall=1;
 
         imgAvatar= findViewById(R.id.img_connect_avatar);
         imgStartCall= findViewById(R.id.img_startCall);
@@ -107,8 +107,8 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         imgEndCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(0);
+                Toast.makeText(HaveConnectionRequestActivity.this, "click", Toast.LENGTH_SHORT).show();
+                mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(1);
                 mediaPlayer.stop();
                 vibrator.cancel();
                 finish();
@@ -126,9 +126,8 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         imgStartCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(HaveConnectionRequestActivity.this, "Start call", Toast.LENGTH_SHORT).show();
 
-                checkStartCall=true;
+                checkStartCall=2;
 
                 startActivity(new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class));
 
@@ -145,14 +144,16 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(checkStartCall==false){
-                    mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(0);
+                if(checkStartCall==1){
+                    Toast.makeText(HaveConnectionRequestActivity.this, "35s", Toast.LENGTH_SHORT).show();
+                    mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(1);
                     mediaPlayer.stop();
                     vibrator.cancel();
                     finish();
-                }else checkStartCall=false;
-            }
-        }, 35000);
+                }
+                }
+        }, 20000);
+
 
     }
 }

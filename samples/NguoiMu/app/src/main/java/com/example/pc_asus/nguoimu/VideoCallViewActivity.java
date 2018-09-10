@@ -32,57 +32,27 @@ import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 
 
-
-
-import android.Manifest;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
-import android.os.Bundle;
-import android.speech.RecognizerIntent;
-import android.speech.tts.TextToSpeech;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.SurfaceView;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Random;
 
-import io.agora.rtc.Constants;
-import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.RtcEngine;
-import io.agora.rtc.video.VideoCanvas;
 
 public class VideoCallViewActivity extends AppCompatActivity implements  TextToSpeech.OnInitListener{
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
     String uid;
     boolean readData=false;
-    private  boolean calling=false;
     String idSelected;
     TextToSpeech tts;
     private final int REQ_CODE_SPEECH_INPUT = 100;
-    TextView tv2;
-    Button btn_dangXuat,btn_thongTinTaiKhoan;
-    private static final String LOG_TAG = VideoChatViewActivity.class.getSimpleName();
+    Button btn_dangXuat;
+    private static final String LOG_TAG = VideoCallViewActivity.class.getSimpleName();
 
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
@@ -123,45 +93,34 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_video_chat_view);
 
-//        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
-//            initAgoraEngineAndJoinChannel();
-//        }
+            setContentView(R.layout.activity_video_call_view);
+            tts= new TextToSpeech(this, this);
 
-            btn_dangXuat= findViewById(R.id.btn_dangXuat);
-            btn_thongTinTaiKhoan= findViewById(R.id.btn_tttk);
+            mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
+            uid= mCurrentUser.getUid();
+            mDatabase= FirebaseDatabase.getInstance().getReference();
 
-            tv2= (TextView) findViewById(R.id.tv_speak);
+            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
+               // tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH,null);
+                initAgoraEngineAndJoinChannel();
+                mRtcEngine.switchCamera();
+                readData=true;
+                getListFriend(uid);
+            }
 
-            tts.speak("chạm vào màn hình để nói",TextToSpeech.QUEUE_FLUSH,null);
-            tv2.setOnClickListener(new View.OnClickListener() {
+            TextView tv_endCall= findViewById(R.id.tv_endCallActivity);
+            tv_endCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    promptSpeechInput();
-                }
-            });
-            btn_dangXuat.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(VideoCallViewActivity.this,SignInActivity.class));
+                    mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(0);
                     finish();
-                }
-            });
-
-            btn_thongTinTaiKhoan.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(VideoCallViewActivity.this,AccountSettingsActivity.class));
-
                 }
             });
 
         }
 
     private void initAgoraEngineAndJoinChannel() {
-        calling=true;
         initializeAgoraEngine();     // Tutorial Step 1
         setupVideoProfile();         // Tutorial Step 2
         // setupLocalVideo();           // Tutorial Step 3
@@ -225,12 +184,10 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
     protected void onDestroy() {
         super.onDestroy();
 
-        if(calling==true) {
             leaveChannel();
             RtcEngine.destroy();                  //chưa gọi nên khi thoát màn hình nó chưa có đối tượng
             mRtcEngine = null;
-            calling=false;
-        }
+
         if(tts!=null){
             tts.stop();
             tts.shutdown();
@@ -294,7 +251,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
 
 
 
-    private void promptSpeechInput() {
+    private void promptSpeechInput() {           //mở đialog nói
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         // xac nhan ung dung muon gui yeu cau
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
@@ -336,17 +293,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                     Log.e("abc", result.get(i));
                     if(result.get(i).equalsIgnoreCase("kết nối")){
 
-                        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
-                            tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH,null);
-                            initAgoraEngineAndJoinChannel();
-                            mRtcEngine.switchCamera();
-                            ///////                          ///////////////////////////////////
-                            readData=true;
-                            getListFriend(uid);
 
-
-
-                        }
 
 
 
@@ -356,17 +303,6 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
 
                 }
             }
-//            else if (resultCode == RecognizerIntent.RESULT_AUDIO_ERROR){
-//                showToastMessage("Audio Error");
-//            } else if (resultCode == RecognizerIntent.RESULT_CLIENT_ERROR){
-//                showToastMessage("Client Error");
-//            } else if (resultCode == RecognizerIntent.RESULT_NETWORK_ERROR){
-//                showToastMessage("Network Error");
-//            } else if (resultCode == RecognizerIntent.RESULT_NO_MATCH){
-//                showToastMessage("No Match");
-//            } else if (resultCode == RecognizerIntent.RESULT_SERVER_ERROR){
-//                showToastMessage("Server Error");
-//            }
 
 
         }
@@ -450,7 +386,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                         String s1 = dataSnapshot.child("connectionRequest").getValue().toString();
                         int status1 = Integer.parseInt(s1);
 
-                        if (status == 1 && status1==0) {
+                        if ((status == 1) && (status1==0 || status1==1)) {
                             arrTNVFreeTime.add(dataSnapshot.getKey());
                             Log.e("arr", dataSnapshot.getKey());
 
@@ -466,15 +402,19 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                 mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(uid);                           // nhớ sữa code xet lun coi có đang kết nối vs ai ko mới chọn
 
 
+                                // nếu TNV ko bắt máy thì sẽ kết nối lại vs TNV  random
                                 mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         String disconnect= dataSnapshot.getValue().toString();
-                                        if(disconnect.equalsIgnoreCase("0")){
-                                            tts.speak("dang kết nối lại", TextToSpeech.QUEUE_FLUSH,null);
+                                        if(disconnect.equalsIgnoreCase("1")){
+                                          //  tts.speak("dang kết nối lại", TextToSpeech.QUEUE_FLUSH,null);
                                             initAgoraEngineAndJoinChannel();
                                             readData=true;
                                             getListFriend(uid);
+                                        }else if(disconnect.equalsIgnoreCase("0")){
+                                            tts.speak("đã ngắt kết nối", TextToSpeech.QUEUE_FLUSH,null);
+                                            finish();
                                         }
                                     }
 

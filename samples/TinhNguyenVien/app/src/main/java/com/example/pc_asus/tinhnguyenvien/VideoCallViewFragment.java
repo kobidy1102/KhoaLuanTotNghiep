@@ -13,12 +13,8 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,7 +32,7 @@ public class VideoCallViewFragment  extends Fragment{
     private FirebaseUser mCurrentUser;
         View view;
        // VideoCallActivity activity;
-    private static final String LOG_TAG = VideoChatViewActivity.class.getSimpleName();
+    private static final String LOG_TAG = VideoCallActivity.class.getSimpleName();
 
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
@@ -77,7 +73,7 @@ public class VideoCallViewFragment  extends Fragment{
         @Override
         public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup
         container, @Nullable Bundle savedInstanceState){
-        view = inflater.inflate(R.layout.activity_video_chat_view, container, false);
+        view = inflater.inflate(R.layout.fragment_video_call_view, container, false);
             Log.e("abc", "camera");
 
 
@@ -200,7 +196,6 @@ public class VideoCallViewFragment  extends Fragment{
     // Tutorial Step 4
     private void joinChannel() {
         mRtcEngine.joinChannel(null, CheckConnectionService.keyRoomVideoChat, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
-        Toast.makeText(VideoCallActivity.activity, "Join channel", Toast.LENGTH_SHORT).show();
     }
 
     // Tutorial Step 5

@@ -6,4 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".VideoCallViewActivity">
 
+    <TextView
+        android:id="@+id/tv_endCallActivity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Chạm vào màn hình để hủy kết nối"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

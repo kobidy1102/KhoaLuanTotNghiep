@@ -9,11 +9,6 @@ package com.example.pc_asus.tinhnguyenvien;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.ListView;
-        import android.widget.TextView;
-        import android.widget.Toast;
 
 
 public class MapViewFragment  extends Fragment {
@@ -28,7 +23,7 @@ public class MapViewFragment  extends Fragment {
             container, @Nullable Bundle savedInstanceState){
 
 
-        view = inflater.inflate(R.layout.activity_video_chat_view, container, false);
+        view = inflater.inflate(R.layout.fragment_video_call_view, container, false);
         Log.e("abc", "camera");
 
         return view;

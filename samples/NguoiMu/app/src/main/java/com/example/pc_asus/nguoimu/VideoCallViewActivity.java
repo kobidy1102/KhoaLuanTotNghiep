@@ -54,6 +54,9 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
     Button btn_dangXuat;
     private static final String LOG_TAG = VideoCallViewActivity.class.getSimpleName();
 
+     ArrayList<String> arrTNVFreeTime = new ArrayList<String>();
+     ArrayList<String> arr = new ArrayList<String>();
+
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
 
@@ -317,8 +320,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
     // hàm tính toán
     private void getListFriend(String uid){
 
-        final ArrayList<String> arr = new ArrayList<String>();
-
+        arr.clear();
         mDatabase.child("NguoiMu").child("Friends").child(uid).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -370,18 +372,19 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
 
 
 
-    private void getStatusOfFriends(final ArrayList<String> arr2){
+    private void getStatusOfFriends(final ArrayList<String> arr){
 
-        final ArrayList<String> arrTNVFreeTime = new ArrayList<String>();
 
-        for (int i = 0; i < arr2.size(); i++) {
-            Log.e("arr", "friends=" + arr2.get(i));
+        arrTNVFreeTime.clear();
+        for (int i = 0; i < arr.size(); i++) {
+            Log.e("arr", "friends=" + arr.get(i));
             final int finished = i;
-            mDatabase.child("TinhNguyenVien").child("Status").child(arr2.get(i)).addValueEventListener(new ValueEventListener() {
+            mDatabase.child("TinhNguyenVien").child("Status").child(arr.get(i)).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(readData==true) {
                         String s0 = dataSnapshot.child("statusWithFriends").getValue().toString();
+                        Log.e("ebc","status with friends:"+s0);
                         int status = Integer.parseInt(s0);
                         String s1 = dataSnapshot.child("connectionRequest").getValue().toString();
                         int status1 = Integer.parseInt(s1);
@@ -392,9 +395,9 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
 
                         }
 
-                        if (finished == arr2.size() - 1) {
-
-                            if(arr2.size()!=0) {
+                        if (finished == arr.size() - 1) {
+                            Toast.makeText(VideoCallViewActivity.this, "bạn bè đang rảnh:"+arrTNVFreeTime.size(), Toast.LENGTH_SHORT).show();
+                            if(arrTNVFreeTime.size()!=0) {
                                 Random rd = new Random();
                                 int number = rd.nextInt(arrTNVFreeTime.size());
                                 idSelected = arrTNVFreeTime.get(number);
@@ -412,6 +415,8 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                             initAgoraEngineAndJoinChannel();
                                             readData=true;
                                             getListFriend(uid);
+                                            arr.clear();
+                                            arrTNVFreeTime.clear();
                                         }else if(disconnect.equalsIgnoreCase("0")){
                                             tts.speak("đã ngắt kết nối", TextToSpeech.QUEUE_FLUSH,null);
                                             finish();

@@ -1,6 +1,7 @@
 package com.example.pc_asus.tinhnguyenvien;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
@@ -129,6 +130,11 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
 
                 checkStartCall=true;
 
+                startActivity(new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class));
+
+                mediaPlayer.stop();
+                vibrator.cancel();
+                finish();
             }
         });
 

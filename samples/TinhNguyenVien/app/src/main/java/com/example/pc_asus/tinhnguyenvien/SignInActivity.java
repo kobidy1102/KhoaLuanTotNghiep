@@ -59,7 +59,9 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         Log.e("abc","trang thai dang nhap "+currentUser);
         if(currentUser!=null) {
-            Intent intent= new Intent(SignInActivity.this,VideoChatActivity.class);
+         //   Intent intent= new Intent(SignInActivity.this,VideoChatActivity.class);
+               Intent intent= new Intent(SignInActivity.this,VideoChatActivity.class);
+
             startActivity(intent);
             finish();
         }

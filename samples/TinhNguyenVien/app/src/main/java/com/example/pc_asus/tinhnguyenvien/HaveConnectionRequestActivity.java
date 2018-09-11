@@ -156,7 +156,18 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if(checkStartCall==1){
-                    Toast.makeText(HaveConnectionRequestActivity.this, "35s", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HaveConnectionRequestActivity.this, "20s", Toast.LENGTH_SHORT).show();
+
+                    mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(0);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(1);
+
+                        }
+                    }, 20000);
+
                     mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(1);
                     mediaPlayer.stop();
                     vibrator.cancel();

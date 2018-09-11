@@ -410,7 +410,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         String disconnect= dataSnapshot.getValue().toString();
-                                        if(disconnect.equalsIgnoreCase("1")){
+                                        if(disconnect.equalsIgnoreCase("1") && arrTNVFreeTime.size()>1){        // bạn bè k bắt máy -> bận,, list bạn phải có 2 người trở lên thì mới kết nối lại tới bạn
                                           //  tts.speak("dang kết nối lại", TextToSpeech.QUEUE_FLUSH,null);
                                             initAgoraEngineAndJoinChannel();
                                             readData=true;

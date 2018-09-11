@@ -36,13 +36,15 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
     private TextView tvName;
     private MediaPlayer mediaPlayer;
     private Vibrator vibrator;
-
+    String uid;
     private int checkStartCall=0;
+     String sttFriends,sttAll;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_have_connection_request);
 
+        Log.e("abc","create activity hỏi");
         //activity hiển thị lên trước màn hình khóa
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
@@ -74,8 +76,10 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         tvName= findViewById(R.id.tv_connect_name);
 
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
-        final String uid= mCurrentUser.getUid();
+        uid= mCurrentUser.getUid();
         mDatabase= FirebaseDatabase.getInstance().getReference();
+
+     //   getStatus();
 
         mDatabase.child("NguoiMu").child("Users").child(CheckConnectionService.keyRoomVideoChat).addValueEventListener(new ValueEventListener() {
             @Override
@@ -107,17 +111,26 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         imgEndCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checkStartCall=3;
                 Toast.makeText(HaveConnectionRequestActivity.this, "click", Toast.LENGTH_SHORT).show();
                 //bận
+                Log.e("abc","-----bấm end: "+sttFriends +" "+sttAll);
                 mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(0);
+                mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(0);
+
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(1);
+                        Log.e("abc","5s sau khi bấm end");
+
+                        mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(1);          //TODO
+                        mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(1);
+
+
 
                     }
-                }, 20000);
+                }, 5000);
 
                 mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(1);
                 mediaPlayer.stop();
@@ -149,24 +162,31 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         });
 
 
-        //35s mà ko nhấc máy thì hủy
+        //20s mà ko nhấc máy thì hủy
 
+        Log.e("abc","checkstartcall-1 "+checkStartCall);
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Log.e("abc","checkstartcall-2 "+checkStartCall);
+
                 if(checkStartCall==1){
                     Toast.makeText(HaveConnectionRequestActivity.this, "20s", Toast.LENGTH_SHORT).show();
+                    Log.e("abc","20s set bận");
 
                     mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(0);
+                    mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(0);
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(1);
+                            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(1);   //TODO
+                            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(1);
+                            Log.e("abc","5s sau 20s set rãnh");
 
                         }
-                    }, 20000);
+                    }, 5000);
 
                     mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(1);
                     mediaPlayer.stop();
@@ -177,5 +197,19 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         }, 20000);
 
 
+    }
+
+    void getStatus(){
+        mDatabase.child("TinhNguyenVien").child("Status").child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                 sttFriends= dataSnapshot.child("statusWithFriends").getValue().toString();
+                 sttAll= dataSnapshot.child("statusWithAll").getValue().toString();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

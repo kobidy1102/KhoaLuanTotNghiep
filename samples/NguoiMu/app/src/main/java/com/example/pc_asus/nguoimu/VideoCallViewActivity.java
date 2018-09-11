@@ -48,15 +48,19 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
     private FirebaseUser mCurrentUser;
     String uid;
     boolean readData=false;
+    boolean readData2=false;
+
     String idSelected;
     TextToSpeech tts;
     private final int REQ_CODE_SPEECH_INPUT = 100;
-    Button btn_dangXuat;
+
+
     private static final String LOG_TAG = VideoCallViewActivity.class.getSimpleName();
 
+    ArrayList<String> arrListTNV = new ArrayList<String>();
      ArrayList<String> arrTNVFreeTime = new ArrayList<String>();
-     ArrayList<String> arr = new ArrayList<String>();
-
+     ArrayList<String> arrListFriends = new ArrayList<String>();
+    ArrayList<String> arrFriendsFreeTime = new ArrayList<String>();
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
 
@@ -317,15 +321,16 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
 
 
 
-    // hàm tính toán
+    // Bạn bè
+
     private void getListFriend(String uid){
 
-        arr.clear();
+        arrListFriends.clear();
         mDatabase.child("NguoiMu").child("Friends").child(uid).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(readData==true) {
-                    arr.add(dataSnapshot.getKey());
+                    arrListFriends.add(dataSnapshot.getKey());
                 }
 
             }
@@ -356,7 +361,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(readData==true) {
-                    getStatusOfFriends(arr);
+                    getStatusOfFriends(arrListFriends);
                 }
             }
 
@@ -375,28 +380,203 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
     private void getStatusOfFriends(final ArrayList<String> arr){
 
 
-        arrTNVFreeTime.clear();
+        arrFriendsFreeTime.clear();
         for (int i = 0; i < arr.size(); i++) {
             Log.e("arr", "friends=" + arr.get(i));
-            final int finished = i;
+
             mDatabase.child("TinhNguyenVien").child("Status").child(arr.get(i)).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(readData==true) {
                         String s0 = dataSnapshot.child("statusWithFriends").getValue().toString();
-                        Log.e("ebc","status with friends:"+s0);
+                        //Log.e("ebc","status with friends:"+s0);
                         int status = Integer.parseInt(s0);
                         String s1 = dataSnapshot.child("connectionRequest").getValue().toString();
-                        int status1 = Integer.parseInt(s1);
-
+                        int status1;
+                      try {
+                           status1 = Integer.parseInt(s1);
+                      }catch (Exception e){
+                          status1=7;
+                      }
                         if ((status == 1) && (status1==0 || status1==1)) {
-                            arrTNVFreeTime.add(dataSnapshot.getKey());
-                            Log.e("arr", dataSnapshot.getKey());
+                            arrFriendsFreeTime.add(dataSnapshot.getKey());
+                            Log.e("arr","bạn đang rãnh: "+ dataSnapshot.getKey());
 
                         }
 
-                        if (finished == arr.size() - 1) {
-                            Toast.makeText(VideoCallViewActivity.this, "bạn bè đang rảnh:"+arrTNVFreeTime.size(), Toast.LENGTH_SHORT).show();
+                        if (dataSnapshot.getKey().equalsIgnoreCase(arr.get(arr.size()-1))) {
+                           // Toast.makeText(VideoCallViewActivity.this, "bạn bè đang rảnh:"+arrFriendsFreeTime.size(), Toast.LENGTH_SHORT).show();
+                            if(arrFriendsFreeTime.size()!=0) {
+                                Random rd = new Random();
+                                int number = rd.nextInt(arrFriendsFreeTime.size());
+                                idSelected = arrFriendsFreeTime.get(number);
+                                Toast.makeText(VideoCallViewActivity.this, idSelected, Toast.LENGTH_SHORT).show();//////////////ĐÃ chọn dc bbe đang rãnh
+                                mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(uid);                           // nhớ sữa code xet lun coi có đang kết nối vs ai ko mới chọn
+
+
+                                // nếu TNV ko bắt máy thì sẽ kết nối lại vs TNV  random
+                                mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        String disconnect= dataSnapshot.getValue().toString();
+                                        if(disconnect.equalsIgnoreCase("1") && arrFriendsFreeTime.size()>1){        // bạn bè k bắt máy -> bận,, list bạn phải có 2 người trở lên thì mới kết nối lại tới bạn
+                                          //  tts.speak("dang kết nối lại", TextToSpeech.QUEUE_FLUSH,null);
+                                            Log.e("arr","kết nối lại với bạn bè "+arrFriendsFreeTime.size());
+                                          //  initAgoraEngineAndJoinChannel();
+                                            readData=true;
+                                           // getListFriend(uid);
+                                           // arrListFriends.clear();
+                                            arrListFriends.remove(idSelected);
+                                            getStatusOfFriends(arrListFriends);
+
+                                            arrFriendsFreeTime.clear();
+                                        }else if(disconnect.equalsIgnoreCase("1") && arrFriendsFreeTime.size()==1){
+                                            Log.e("arr","kêt nối lại với TNV vì bb bận hết");                     //có 1 bạn mà nó k bắt máy-> gọi người lạ
+                                           // initAgoraEngineAndJoinChannel();
+                                            readData2=true;
+                                            getListVolunteers(uid);
+
+                                        }else if(disconnect.equalsIgnoreCase("0")){
+                                            tts.speak("đã ngắt kết nối", TextToSpeech.QUEUE_FLUSH,null);
+                                            finish();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
+                                //CODE
+                                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
+                                    initAgoraEngineAndJoinChannel();
+                                }
+
+                                Log.e("arr","id bạn bè được chọn "+ idSelected);
+                                readData = false;
+                            }else{                                      // bạn bè ko có ai rãnh thì kết nối vs người lạ
+                                //initAgoraEngineAndJoinChannel();
+                                readData2=true;
+                                getListVolunteers(uid);
+                               // arrListFriends.clear();
+                               // arrFriendsFreeTime.clear();
+                                ////
+                            }
+                        }
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
+    }
+
+
+
+       //Tình nguyện viên
+
+    private void getListVolunteers(String uid){
+
+        Log.e("abc","getlistTNV");
+        arrListTNV.clear();
+        mDatabase.child("TinhNguyenVien").child("Users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.e("abc"," zô- readData2"+readData2);
+                if(readData2==true) {
+                    arrListTNV.add(dataSnapshot.getKey());
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        mDatabase.child("TinhNguyenVien").child("Users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(readData2==true) {
+                    Log.e("arr","arrFriends để trừ ="+arrListFriends.size());
+                    for(int i=0;i<arrListFriends.size();i++){
+                        arrListTNV.remove(arrListFriends.get(i));
+                    }
+                    getStatusOfVolunteers(arrListTNV);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+
+
+
+    private void getStatusOfVolunteers(final ArrayList<String> arr){
+
+
+        Log.e("abc"," get Status TNV="+arr.size());
+        arrTNVFreeTime.clear();
+        for (int i = 0; i < arr.size(); i++) {
+
+          Log.e("abc","tnv=" +arr.get(i));
+
+            mDatabase.child("TinhNguyenVien").child("Status").child(arr.get(i)).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(readData2==true) {
+                        String s0 = dataSnapshot.child("statusWithAll").getValue().toString();
+                      //  Log.e("ebc","status with all:"+s0);
+                        int status = Integer.parseInt(s0);
+                        String s1 = dataSnapshot.child("connectionRequest").getValue().toString();
+                        int status1 ;
+                      try {
+                          status1= Integer.parseInt(s1);
+                      }catch (Exception e){
+                          status1=7;
+                       //   Log.e("abc","lỗi parse");
+                      }
+                        if ((status == 1) && (status1==0 || status1==1)) {
+                            arrTNVFreeTime.add(dataSnapshot.getKey());
+                            Log.e("tnv free time", dataSnapshot.getKey()+" "+arrTNVFreeTime.size());
+
+                        }
+
+                      //  Log.e("abc","getkey="+dataSnapshot.getKey());
+                        if (dataSnapshot.getKey().equalsIgnoreCase(arr.get(arr.size()-1))) {
+                           // Toast.makeText(VideoCallViewActivity.this, "TNV đang rảnh:"+arrTNVFreeTime.size(), Toast.LENGTH_SHORT).show();
+                         //   Log.e("list tnv","list tnv rảnh="+arrTNVFreeTime.size());
                             if(arrTNVFreeTime.size()!=0) {
                                 Random rd = new Random();
                                 int number = rd.nextInt(arrTNVFreeTime.size());
@@ -411,11 +591,15 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         String disconnect= dataSnapshot.getValue().toString();
                                         if(disconnect.equalsIgnoreCase("1") && arrTNVFreeTime.size()>1){        // bạn bè k bắt máy -> bận,, list bạn phải có 2 người trở lên thì mới kết nối lại tới bạn
-                                          //  tts.speak("dang kết nối lại", TextToSpeech.QUEUE_FLUSH,null);
-                                            initAgoraEngineAndJoinChannel();
-                                            readData=true;
-                                            getListFriend(uid);
-                                            arr.clear();
+                                            //  tts.speak("dang kết nối lại", TextToSpeech.QUEUE_FLUSH,null);
+                                            Log.e("abc","zô cái kết nối lại phía dưới");
+                                           // initAgoraEngineAndJoinChannel();
+                                            readData2=true;
+                                            //getListVolunteers(uid);
+                                           // arrListTNV.clear();
+                                            arrListTNV.remove(idSelected);
+                                            getStatusOfVolunteers(arrListTNV);
+
                                             arrTNVFreeTime.clear();
                                         }else if(disconnect.equalsIgnoreCase("0")){
                                             tts.speak("đã ngắt kết nối", TextToSpeech.QUEUE_FLUSH,null);
@@ -435,11 +619,8 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                     initAgoraEngineAndJoinChannel();
                                 }
 
-                                Log.e("arr", idSelected);
-                                readData = false;
-                            }else{                                      // bạn bè ko có ai rãnh thì kết nối vs người lạ
-
-                                ////
+                                Log.e("arr", "id tnv được chọn"+idSelected);
+                                readData2 = false;
                             }
                         }
 
@@ -455,4 +636,5 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
         }
 
     }
+
     }

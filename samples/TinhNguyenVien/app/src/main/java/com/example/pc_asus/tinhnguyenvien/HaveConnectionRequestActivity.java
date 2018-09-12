@@ -81,7 +81,7 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
 
      //   getStatus();
 
-        mDatabase.child("NguoiMu").child("Users").child(CheckConnectionService.keyRoomVideoChat).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("NguoiMu").child("Users").child(CheckConnectionService.keyRoomVideoChat).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.e("abc",""+CheckConnectionService.keyRoomVideoChat);
@@ -200,7 +200,7 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
     }
 
     void getStatus(){
-        mDatabase.child("TinhNguyenVien").child("Status").child(uid).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("TinhNguyenVien").child("Status").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                  sttFriends= dataSnapshot.child("statusWithFriends").getValue().toString();

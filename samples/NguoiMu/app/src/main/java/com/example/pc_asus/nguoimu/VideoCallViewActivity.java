@@ -59,6 +59,8 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
      ArrayList<String> arrTNVFreeTime = new ArrayList<String>();
      ArrayList<String> arrListFriends = new ArrayList<String>();
     ArrayList<String> arrFriendsFreeTime = new ArrayList<String>();
+    ArrayList<String> arrListFriendsNeverChange = new ArrayList<String>();
+
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
 
@@ -327,6 +329,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     arrListFriends.add(dataSnapshot.getKey());
+                arrListFriendsNeverChange.add(dataSnapshot.getKey());
 
             }
 
@@ -400,7 +403,6 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                         }
 
                         if (dataSnapshot.getKey().equalsIgnoreCase(arr.get(arr.size()-1))) {
-                            // Toast.makeText(VideoCallViewActivity.this, "bạn bè đang rảnh:"+arrFriendsFreeTime.size(), Toast.LENGTH_SHORT).show();
                             //chọn dc bbe đang rãnh
                             if(arrFriendsFreeTime.size()!=0) {
                                 Random rd = new Random();
@@ -504,10 +506,10 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
 
         mDatabase.child("TinhNguyenVien").child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.e("arr","arrFriends để trừ ="+arrListFriends.size());
-                    for(int i=0;i<arrListFriends.size();i++){
-                        arrListTNV.remove(arrListFriends.get(i));
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {                   //list all TNV-list bạn bè -> người lạ
+                    Log.e("arr","arrFriends để trừ ="+arrListFriendsNeverChange.size());
+                    for(int i=0;i<arrListFriendsNeverChange.size();i++){
+                        arrListTNV.remove(arrListFriendsNeverChange.get(i));
                     }
                     getStatusOfVolunteers(arrListTNV);
             }
@@ -593,7 +595,6 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                 Log.e("arr", "id tnv được chọn"+idSelected);
                             }
                         }
-
 
                 }
 

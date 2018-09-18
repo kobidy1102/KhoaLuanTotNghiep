@@ -41,7 +41,7 @@ public class VideoCallViewFragment  extends Fragment{
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Tutorial Step 1
         @Override
         public void onFirstRemoteVideoDecoded(final int uid, int width, int height, int elapsed) { // Tutorial Step 5
-            VideoCallActivity.activity.runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     setupRemoteVideo(uid);
@@ -51,7 +51,7 @@ public class VideoCallViewFragment  extends Fragment{
 
         @Override
         public void onUserOffline(int uid, int reason) { // Tutorial Step 7
-            VideoCallActivity.activity.runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     onRemoteUserLeft();
@@ -61,7 +61,7 @@ public class VideoCallViewFragment  extends Fragment{
 
         @Override
         public void onUserMuteVideo(final int uid, final boolean muted) { // Tutorial Step 10
-            VideoCallActivity.activity.runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     onRemoteUserVideoMuted(uid, muted);
@@ -74,7 +74,7 @@ public class VideoCallViewFragment  extends Fragment{
         public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup
         container, @Nullable Bundle savedInstanceState){
         view = inflater.inflate(R.layout.fragment_video_call_view, container, false);
-            Log.e("abc", "camera");
+            //Log.e("abc", "camera");
 
 
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
@@ -91,7 +91,7 @@ public class VideoCallViewFragment  extends Fragment{
                 public void onClick(View v) {
 
                     mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(0);
-                    VideoCallActivity.activity.finish();
+                    getActivity().finish();
 
                 }
             });
@@ -113,11 +113,11 @@ public class VideoCallViewFragment  extends Fragment{
 
     public boolean checkSelfPermission(String permission, int requestCode) {
         Log.i(LOG_TAG, "checkSelfPermission " + permission + " " + requestCode);
-        if (ContextCompat.checkSelfPermission(VideoCallActivity.activity,
+        if (ContextCompat.checkSelfPermission(getActivity(),
                 permission)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(VideoCallActivity.activity,
+            ActivityCompat.requestPermissions(getActivity(),
                     new String[]{permission},
                     requestCode);
             return false;
@@ -137,7 +137,7 @@ public class VideoCallViewFragment  extends Fragment{
                     checkSelfPermission(android.Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA);
                 } else {
                     showLongToast("No permission for " + android.Manifest.permission.RECORD_AUDIO);
-                    VideoCallActivity.activity.finish();
+                    getActivity().finish();
                 }
                 break;
             }
@@ -147,7 +147,7 @@ public class VideoCallViewFragment  extends Fragment{
                     initAgoraEngineAndJoinChannel();
                 } else {
                     showLongToast("No permission for " + Manifest.permission.CAMERA);
-                    VideoCallActivity.activity.finish();
+                    getActivity().finish();
                 }
                 break;
             }
@@ -155,10 +155,10 @@ public class VideoCallViewFragment  extends Fragment{
     }
 
     public final void showLongToast(final String msg) {
-        VideoCallActivity.activity.runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(VideoCallActivity.activity.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), msg, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -173,13 +173,13 @@ public class VideoCallViewFragment  extends Fragment{
     }
     // Tutorial Step 6
     public void onEncCallClicked(View view) {
-        VideoCallActivity.activity.finish();
+        getActivity().finish();
     }
 
     // Tutorial Step 1
     private void initializeAgoraEngine() {
         try {
-            mRtcEngine = RtcEngine.create(VideoCallActivity.activity.getBaseContext(), getString(R.string.agora_app_id), mRtcEventHandler);
+            mRtcEngine = RtcEngine.create(getActivity().getBaseContext(), getString(R.string.agora_app_id), mRtcEventHandler);
         } catch (Exception e) {
             Log.e(LOG_TAG, Log.getStackTraceString(e));
 
@@ -206,7 +206,7 @@ public class VideoCallViewFragment  extends Fragment{
             return;
         }
 
-        SurfaceView surfaceView = RtcEngine.CreateRendererView(VideoCallActivity.activity.getBaseContext());
+        SurfaceView surfaceView = RtcEngine.CreateRendererView(getActivity().getBaseContext());
         container.addView(surfaceView);
         mRtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_ADAPTIVE, uid));
 

@@ -32,7 +32,6 @@ public class VideoCallActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    public  static Activity activity;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -52,7 +51,6 @@ public class VideoCallActivity extends AppCompatActivity {
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        activity=this;
 //        if(startFragment==2) {
 //            mViewPager.setCurrentItem(2);
 //            startFragment=0;

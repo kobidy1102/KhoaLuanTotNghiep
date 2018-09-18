@@ -2,9 +2,17 @@ package com.example.pc_asus.nguoimu;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -43,7 +51,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Random;
 
 
-public class VideoCallViewActivity extends AppCompatActivity implements  TextToSpeech.OnInitListener{
+public class VideoCallViewActivity extends AppCompatActivity implements  TextToSpeech.OnInitListener,LocationListener,SensorEventListener {
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
     String uid;
@@ -51,6 +59,13 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
     String idSelected;
     TextToSpeech tts;
     private final int REQ_CODE_SPEECH_INPUT = 100;
+   // private LocationListener mLocationListener;
+   LocationManager locationManager;
+    private SensorManager mSensorManager;
+    private Sensor mSensor;
+
+    double longitude, latitude;
+    float direction;
 
 
     private static final String LOG_TAG = VideoCallViewActivity.class.getSimpleName();
@@ -123,6 +138,16 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                     finish();
                 }
             });
+
+
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 0, this);
+
+            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+
+
 
         }
 
@@ -198,6 +223,8 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
             tts.stop();
             tts.shutdown();
         }
+        locationManager.removeUpdates(this);
+
     }
 
     // Tutorial Step 1
@@ -256,65 +283,6 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
     }
 
 
-
-    private void promptSpeechInput() {           //mở đialog nói
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        // xac nhan ung dung muon gui yeu cau
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
-
-        // goi y nhung dieu nguoi dung muon noi
-
-        // goi y nhan dang nhung gi nguoi dung se noi
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi");
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                "Say something…");
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch (ActivityNotFoundException a) {
-            Toast.makeText(getApplicationContext(),
-                    "Sorry! Your device doesn\\'t support speech input",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Trả lại dữ liệu sau khi nhập giọng nói vào
-     * */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-//        switch (requestCode) {
-//            case REQ_CODE_SPEECH_INPUT:
-        if( requestCode==REQ_CODE_SPEECH_INPUT){
-            if (resultCode == RESULT_OK && null != data) {
-
-                ArrayList<String> result = data
-                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                // nói lại những gì vừa nghe dc
-
-                for(int i=0;i<result.size();i++) {
-                    Log.e("abc", result.get(i));
-                    if(result.get(i).equalsIgnoreCase("kết nối")){
-
-
-
-
-
-
-                    }
-
-
-                }
-            }
-
-
-        }
-
-
-    }
 
 
 
@@ -607,4 +575,73 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
         }
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.e("abc","location: "+location);
+        mDatabase.child("NguoiMu").child("Location").child(uid).child("latitude").setValue(location.getLatitude());
+        mDatabase.child("NguoiMu").child("Location").child(uid).child("longitude").setValue(location.getLongitude());
+
+
     }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Toast.makeText(this, "GPS Enabled", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Toast.makeText(this, "GPS Disabled", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        direction = event.values[0];
+        int direc= (int) direction;
+        int x=0;
+        if(337<=direc || direc<23){
+            x=1;
+        }else if(23<=direc && direc<67){
+            x=2;
+        }else if(67<=direc && direc<113){
+            x=3;
+        }else if(113<=direc && direc<157){
+            x=4;
+        }else if(157<=direc && direc<203){
+            x=5;
+        }else if(203<=direc && direc<247){
+            x=6;
+        }else if(247<=direc && direc<293){
+            x=7;
+        }else if(293<=direc && direc<337){
+            x=8;
+        }
+        mDatabase.child("NguoiMu").child("Location").child(uid).child("direction").setValue(x);
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
+    }
+}

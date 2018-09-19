@@ -23,15 +23,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pc_asus.Modules.DirectionFinder;
 import com.example.pc_asus.Modules.DirectionFinderListener;
 import com.example.pc_asus.Modules.Route;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -46,6 +52,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -68,11 +75,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public List<Polyline> polylinePaths = new ArrayList<>();
     public ProgressDialog progressDialog;
 
-    Button btnMore, btnSearch;
-    EditText edtEndAddress;
+    Button btnMore ;
     View view;
     Marker marker = null;
     double longi, lati;
+    ListView lvFriends;
 
     @Nullable
     @Override
@@ -158,9 +165,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         });
 
         ImageView img_location = view.findViewById(R.id.img_current_location);
-        edtEndAddress = view.findViewById(R.id.edt_endAddress);
+      //  edtEndAddress = view.findViewById(R.id.edt_endAddress);
         btnMore = view.findViewById(R.id.btn_more);
-        btnSearch = view.findViewById(R.id.btn_search);
+        lvFriends= view.findViewById(R.id.lv_friends);
+        lvFriends.setVisibility(View.INVISIBLE);
+
 
         img_location.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,47 +180,94 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         });
 
 
-        btnSearch.setOnClickListener(new View.OnClickListener() {
+        final ArrayList<String> arrFriends= new ArrayList<String>();
+        btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                lvFriends.setVisibility(View.VISIBLE);
+                final ArrayAdapter adapter= new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_1,arrFriends);
+                lvFriends.setAdapter(adapter);
+                arrFriends.clear();
 
-                if (edtEndAddress.getText().toString().isEmpty()) {
-                    Toast.makeText(getActivity(), "Bạn chưa nhập điểm đến", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                String startAddress = lati + "," + longi;
-                DirectionA d= new DirectionA();
 
-                try {
-                    new DirectionFinder(d, "320 Trường Chinh", edtEndAddress.getText().toString().trim()).execute();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                mDatabase.child("NguoiMu").child("PlacesOftenCome").child(CheckConnectionService.keyRoomVideoChat).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        arrFriends.add(dataSnapshot.getKey());
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
 
             }
         });
 
 
-        return view;
 
+
+        PlaceAutocompleteFragment autocompleteFragment1= (PlaceAutocompleteFragment)getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment1);
+
+        autocompleteFragment1.getView().setBackgroundColor(Color.WHITE);
+
+        autocompleteFragment1.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.e("abc", "Place: " + place.getName());
+                String startAddress = lati + "," + longi;
+                String endAddress= place.getAddress().toString();
+                DirectionA d= new DirectionA();
+
+                try {
+                    new DirectionFinder(d, startAddress, endAddress).execute();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+                    Toast.makeText(getActivity(), "Không tìm thấy tuyến đường", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(com.google.android.gms.common.api.Status status) {
+                Log.e("abc", "An error occurred: " + status);
+            }
+
+
+        });
+
+
+
+
+
+        return view;
     }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(getActivity(), "onMapReady", Toast.LENGTH_SHORT).show();
-        Log.e("abc", "onMapReady");
         mMap = googleMap;
-
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-
-            return;
-        }
-
-
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(13, 107.5), 6));
-
 
     }
 
@@ -253,7 +309,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             destinationMarkers = new ArrayList<>();
 
             for (Route route : routes) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 14));
 
                 destinationMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(route.endAddress)

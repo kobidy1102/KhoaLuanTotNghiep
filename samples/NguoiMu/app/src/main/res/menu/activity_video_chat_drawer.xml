@@ -16,6 +16,10 @@
             android:id="@+id/nav_search"
             android:icon="@drawable/ic_search"
             android:title="Tìm Tình Nguyện Viên" />
+        <item
+            android:id="@+id/nav_place"
+            android:icon="@drawable/ic_location"
+            android:title="Địa điểm thường đến" />
 
     </group>
 

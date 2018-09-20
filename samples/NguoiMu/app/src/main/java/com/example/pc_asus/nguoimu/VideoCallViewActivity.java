@@ -669,7 +669,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
         mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("checkStatusDevice").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String stt = "011";
+                String stt = "0"; //TODO sửa thành 0;
                 try {
                     stt = dataSnapshot.getValue().toString();
                 }catch (Exception e){}

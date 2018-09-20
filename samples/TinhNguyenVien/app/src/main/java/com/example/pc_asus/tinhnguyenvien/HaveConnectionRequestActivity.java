@@ -165,7 +165,7 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mDatabase.child("Status").child(uid).child("checkStatusDevice").setValue(0);
+        mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("checkStatusDevice").setValue(0);
     }
 
 }

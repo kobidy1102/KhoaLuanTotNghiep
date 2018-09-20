@@ -1,6 +1,7 @@
 package com.example.pc_asus.tinhnguyenvien;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -21,8 +22,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-public class VideoCallActivity extends AppCompatActivity {
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+public class VideoCallActivity extends AppCompatActivity {
+    private DatabaseReference mDatabase;
+    private FirebaseUser mCurrentUser;
+    String uid;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -66,14 +74,9 @@ public class VideoCallActivity extends AppCompatActivity {
      //
       //  mViewPager.setAdapter(mSectionsPagerAdapter);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
+        uid= mCurrentUser.getUid();
+        mDatabase= FirebaseDatabase.getInstance().getReference();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
@@ -170,4 +173,11 @@ public class VideoCallActivity extends AppCompatActivity {
             return 2;
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("checkStatusDevice").setValue(0);
+    }
+
 }

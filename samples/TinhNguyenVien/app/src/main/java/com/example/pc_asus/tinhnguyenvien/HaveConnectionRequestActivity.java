@@ -79,6 +79,7 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         uid= mCurrentUser.getUid();
         mDatabase= FirebaseDatabase.getInstance().getReference();
 
+
      //   getStatus();
 
         mDatabase.child("NguoiMu").child("Users").child(CheckConnectionService.keyRoomVideoChat).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -112,39 +113,11 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkStartCall=3;
-//                Toast.makeText(HaveConnectionRequestActivity.this, "click", Toast.LENGTH_SHORT).show();
-//                //bận
-//                Log.e("abc","-----bấm end: "+sttFriends +" "+sttAll);
-//                mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(0);
-//                mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(0);
-//
-//                final Handler handler = new Handler();
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Log.e("abc","5s sau khi bấm end");
-//
-//
-//
-//                        mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(1);          //TODO
-//                        mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(1);
-//
-//
-//
-//                    }
-//                }, 5000);
 
                 mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(1);
                 mediaPlayer.stop();
                 vibrator.cancel();
                 finish();
-
-
-//                WindowManager.LayoutParams params = getWindow().getAttributes();
-//                params.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-//                params.screenBrightness = -1;
-//                getWindow().setAttributes(params);
-
             }
         });
 
@@ -177,18 +150,6 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
                     Toast.makeText(HaveConnectionRequestActivity.this, "20s", Toast.LENGTH_SHORT).show();
                     Log.e("abc","20s set bận");
 
-//                    mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(0);
-//                    mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(0);
-//                    final Handler handler = new Handler();
-//                    handler.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(1);   //TODO
-//                            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(1);
-//                            Log.e("abc","5s sau 20s set rãnh");
-//
-//                        }
-//                    }, 5000);
 
                     mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(1);
                     mediaPlayer.stop();
@@ -201,17 +162,10 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
 
     }
 
-//    void getStatus(){
-//        mDatabase.child("TinhNguyenVien").child("Status").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                 sttFriends= dataSnapshot.child("statusWithFriends").getValue().toString();
-//                 sttAll= dataSnapshot.child("statusWithAll").getValue().toString();
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mDatabase.child("Status").child(uid).child("checkStatusDevice").setValue(0);
+    }
+
 }

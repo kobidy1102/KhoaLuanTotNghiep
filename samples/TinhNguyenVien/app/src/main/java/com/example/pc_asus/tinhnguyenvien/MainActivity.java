@@ -210,9 +210,9 @@ public class MainActivity extends AppCompatActivity
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(MainActivity.this,SignInActivity.class));
 
-            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest").setValue(0);
-            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithAll").setValue(0);
-            mDatabase.child("TinhNguyenVien").child("Status").child(uid).child("statusWithFriends").setValue(0);
+            mDatabase.child("Status").child(uid).child("connectionRequest").setValue(0);
+            mDatabase.child("Status").child(uid).child("statusWithAll").setValue(0);
+            mDatabase.child("Status").child(uid).child("statusWithFriends").setValue(0);
 
 
             finish();
@@ -225,4 +225,12 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mDatabase.child("Status").child(uid).child("checkStatusDevice").setValue(0);
+    }
+
+
 }

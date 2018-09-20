@@ -13,6 +13,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -379,6 +380,15 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                 Toast.makeText(VideoCallViewActivity.this, idSelected, Toast.LENGTH_SHORT).show();
                                 mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(uid);
 
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        checkStatusOfDevice();
+
+                                    }
+                                }, 1000);
+
 
                                 // nếu TNV ko bắt máy thì sẽ kết nối lại vs TNV  random
 
@@ -389,12 +399,12 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         if(check[0] ==true) {
                                             String disconnect = dataSnapshot.getValue().toString();
-                                            if (disconnect.equalsIgnoreCase("1") && arrFriendsFreeTime.size() > 1) {        // bạn bè k bắt máy -> bận,, list bạn phải có 2 người trở lên thì mới kết nối lại tới bạn
+
+                                            if (disconnect.equals("1") && arrFriendsFreeTime.size() > 1) {        // bạn bè k bắt máy -> bận,, list bạn phải có 2 người trở lên thì mới kết nối lại tới bạn
                                                 //  tts.speak("dang kết nối lại", TextToSpeech.QUEUE_FLUSH,null);
                                                 Log.e("arr", "kết nối lại với bạn bè " + arrFriendsFreeTime.size());
                                                 arrListFriends.remove(idSelected);
                                                 getStatusOfFriends(arrListFriends);
-
                                                 arrFriendsFreeTime.clear();
                                                 check[0] =false;
                                             } else if (disconnect.equalsIgnoreCase("1") && arrFriendsFreeTime.size() == 1) {
@@ -533,6 +543,15 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                 mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(uid);
 
 
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        checkStatusOfDevice();
+
+                                    }
+                                }, 1000);
+
                                 final boolean[] check = {true};
                                 // nếu TNV ko bắt máy thì sẽ kết nối lại vs TNV  random
                                 mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").addValueEventListener(new ValueEventListener() {
@@ -541,7 +560,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                         if(check[0] ==true) {
                                             String disconnect = dataSnapshot.getValue().toString();
                                             // bạn bè k bắt máy -> bận,, list bạn phải có 2 người trở lên thì mới kết nối lại tới bạn
-                                            if (disconnect.equalsIgnoreCase("1") && arrTNVFreeTime.size() > 1) {
+                                            if (disconnect.equals("1") && arrTNVFreeTime.size() > 1) {
                                                 Log.e("abc", "zô cái kết nối lại phía dưới");
                                                 arrListTNV.remove(idSelected);
                                                 getStatusOfVolunteers(arrListTNV);
@@ -643,5 +662,27 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
     public void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+    }
+
+
+    private  void checkStatusOfDevice(){
+        mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("checkStatusDevice").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String stt = "011";
+                try {
+                    stt = dataSnapshot.getValue().toString();
+                }catch (Exception e){}
+                if(stt.equals("0")) {
+                    Log.e("abc","thuê bao quý khách vừa gọi hiện đang bận");
+                    mDatabase.child("TinhNguyenVien").child("Status").child(idSelected).child("connectionRequest").setValue(1);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

@@ -32,6 +32,7 @@ public class CheckConnectionService extends Service {
     private FirebaseUser mCurrentUser;
     public static  String keyRoomVideoChat;
     MediaPlayer mediaPlayer;
+     String uid;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -44,14 +45,16 @@ public class CheckConnectionService extends Service {
 
       //  mediaPlayer= MediaPlayer.create(this,R.raw.ringtone);
       //  mediaPlayer.start();
-        Log.e("connect","start service...");
+        Log.e("abc","start service...");
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
-        final String uid= mCurrentUser.getUid();
-        mDatabase= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Status").child(uid).child("connectionRequest");
-        mDatabase.addValueEventListener(new ValueEventListener() {
+         uid= mCurrentUser.getUid();
+        mDatabase= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Status").child(uid);
+        mDatabase.child("connectionRequest").addValueEventListener(new ValueEventListener() {
             @SuppressLint("MissingPermission")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mDatabase.child("checkStatusDevice").setValue(1);
+
                 String key=dataSnapshot.getValue().toString();
                 if(key.equalsIgnoreCase("0")==false && key.equalsIgnoreCase("1")==false ){    // khac 0
                     Toast.makeText(CheckConnectionService.this, "-"+dataSnapshot.getValue().toString()+"-", Toast.LENGTH_SHORT).show();                    //tới đây rồi,, giờ ,,, khi có yêu cầu thì làm cái như báo thức hỏi chấp nhận hoặc từ chối
@@ -78,9 +81,8 @@ public class CheckConnectionService extends Service {
             }
         });
 
-        return START_STICKY;
+        return super.onStartCommand(intent, flags, startId);
     }
-
 
 
 }

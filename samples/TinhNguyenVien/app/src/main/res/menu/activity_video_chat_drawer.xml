@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"
+        android:id="@+id/group1">
         <item
             android:id="@+id/nav_accountSetting"
             android:icon="@drawable/ic_account_setting"
@@ -13,15 +14,10 @@
             android:icon="@drawable/ic_friends"
             android:title="Bạn Bè" />
 
-    </group>
-
-    <item android:title="Communicate">
-        <menu>
+    </group >
             <item
                 android:id="@+id/nav_sign_out"
                 android:icon="@drawable/ic_sign_out"
                 android:title="Đăng Xuất" />
-        </menu>
-    </item>
 
 </menu>

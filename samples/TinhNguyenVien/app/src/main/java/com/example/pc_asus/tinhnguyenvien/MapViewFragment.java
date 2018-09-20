@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,6 +81,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     Marker marker = null;
     double longi, lati;
     ListView lvFriends;
+    int showListPlace;
+    DirectionA d= new DirectionA();
 
     @Nullable
     @Override
@@ -103,7 +106,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //TODO
-        CheckConnectionService.keyRoomVideoChat = "D79LimcFQNOkz1gVuok3lQtQDhy1";
+     //   CheckConnectionService.keyRoomVideoChat = "D79LimcFQNOkz1gVuok3lQtQDhy1";
 
         mDatabase.child("NguoiMu").child("Location").child(CheckConnectionService.keyRoomVideoChat).addValueEventListener(new ValueEventListener() {
             @Override
@@ -114,46 +117,51 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
                 lati = Double.parseDouble(latitude);
                 longi = Double.parseDouble(longitude);
+                try{
+                Bitmap bmp;
 
-                Bitmap bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca1);
 
-                switch (direction) {
-                    case 1:
-                        bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca1);
-                        break;
-                    case 2:
-                        bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca2);
-                        break;
-                    case 3:
-                        bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca3);
-                        break;
-                    case 4:
-                        bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca4);
-                        break;
-                    case 5:
-                        bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca5);
-                        break;
-                    case 6:
-                        bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca6);
-                        break;
-                    case 7:
-                        bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca7);
-                        break;
-                    case 8:
-                        bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca8);
-                        break;
+                    switch (direction) {
 
-                }
+                            case 1:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca1);
+                                break;
+                            case 2:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca2);
+                                break;
+                            case 3:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca3);
+                                break;
+                            case 4:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca4);
+                                break;
+                            case 5:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca5);
+                                break;
+                            case 6:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca6);
+                                break;
+                            case 7:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca7);
+                                break;
+                            case 8:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca8);
+                                break;
+                            default:
+                                bmp = BitmapFactory.decodeResource(getActivity().getResources(), R.mipmap.loca7);
+                                break;
 
+
+                    }
 
                 try {
                     marker.remove();
 
 
-                } catch (Exception e) {
-                }
+                } catch (Exception e) { }
                 marker = mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(latitude),
                         Double.parseDouble(longitude))).icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bmp, 65, 65, false))));
+            }catch (Exception e){Log.e("abc","lỗi:"+e);}
 
 
             }
@@ -181,10 +189,19 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
 
         final ArrayList<String> arrFriends= new ArrayList<String>();
+        final ArrayList<String> arrAddressFriend= new ArrayList<String>();
+
+        showListPlace=0;
         btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lvFriends.setVisibility(View.VISIBLE);
+                showListPlace++;
+                if(showListPlace%2==0){
+                    lvFriends.setVisibility(View.INVISIBLE);
+                }else {
+                    lvFriends.setVisibility(View.VISIBLE);
+                }
+
                 final ArrayAdapter adapter= new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_1,arrFriends);
                 lvFriends.setAdapter(adapter);
                 arrFriends.clear();
@@ -193,7 +210,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 mDatabase.child("NguoiMu").child("PlacesOftenCome").child(CheckConnectionService.keyRoomVideoChat).addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        arrFriends.add(dataSnapshot.getKey());
+                        arrFriends.add(dataSnapshot.child("namePlace").getValue().toString());
+                        arrAddressFriend.add(dataSnapshot.child("address").getValue().toString());
                         adapter.notifyDataSetChanged();
                     }
 
@@ -225,6 +243,25 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
 
 
+        lvFriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String startAddress = lati + "," + longi;
+                String endAddress= arrAddressFriend.get(position);
+                try {
+                    new DirectionFinder(d, startAddress, endAddress).execute();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+                    Toast.makeText(getActivity(), "Không tìm thấy tuyến đường", Toast.LENGTH_SHORT).show();
+
+                }
+                lvFriends.setVisibility(View.INVISIBLE);
+            }
+        });
+
+
+
 
         PlaceAutocompleteFragment autocompleteFragment1= (PlaceAutocompleteFragment)getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment1);
 
@@ -233,11 +270,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         autocompleteFragment1.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
+
                 Log.e("abc", "Place: " + place.getName());
                 String startAddress = lati + "," + longi;
                 String endAddress= place.getAddress().toString();
-                DirectionA d= new DirectionA();
 
                 try {
                     new DirectionFinder(d, startAddress, endAddress).execute();

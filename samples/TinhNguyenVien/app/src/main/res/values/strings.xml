@@ -11,4 +11,5 @@
     <string name="title_activity_video_call">VideoCallActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="map_api_key">AIzaSyBbW4BSGQV6h11Z9bh1XoE-Yt91o6IalPE</string>
+    <string name="forgot_password"><u>Quên mật khẩu</u></string>
 </resources>

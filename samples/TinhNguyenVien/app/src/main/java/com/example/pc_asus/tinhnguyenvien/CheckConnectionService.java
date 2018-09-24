@@ -54,14 +54,13 @@ public class CheckConnectionService extends Service {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String key=dataSnapshot.getValue().toString();
-                if(key.equalsIgnoreCase("0")==false && key.equalsIgnoreCase("1")==false ){    // khac 0
+                keyRoomVideoChat=dataSnapshot.getValue().toString();
+                if(keyRoomVideoChat.equalsIgnoreCase("0")==false && keyRoomVideoChat.equalsIgnoreCase("1")==false ){    // khac 0
                     Toast.makeText(CheckConnectionService.this, "-"+dataSnapshot.getValue().toString()+"-", Toast.LENGTH_SHORT).show();                    //tới đây rồi,, giờ ,,, khi có yêu cầu thì làm cái như báo thức hỏi chấp nhận hoặc từ chối
 
-                    keyRoomVideoChat= dataSnapshot.getValue().toString();
-                    if(keyRoomVideoChat.isEmpty()){
+                   // if(keyRoomVideoChat.isEmpty()){ //#0 và #1 rồi
                         mDatabase.child("checkStatusDevice").setValue(1);
-                    }
+                //    }
                   // sáng màn hình
 //                    PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 //                    final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK

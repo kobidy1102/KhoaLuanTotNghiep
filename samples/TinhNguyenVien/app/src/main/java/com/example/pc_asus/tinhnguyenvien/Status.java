@@ -1,9 +1,9 @@
 package com.example.pc_asus.tinhnguyenvien;
 
 public class Status {
-    String statusWithFriends;
-    String statusWithAll;
-    String connectionRequest;
+    public String statusWithFriends;
+    public String statusWithAll;
+    public String connectionRequest;
 
     public Status() {
     }

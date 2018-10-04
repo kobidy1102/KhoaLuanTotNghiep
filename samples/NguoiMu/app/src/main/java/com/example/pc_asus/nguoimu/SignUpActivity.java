@@ -59,8 +59,12 @@ public class SignUpActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 dialog.dismiss();
+                                User user= new User(edt_name.getText().toString(),edt_email.getText().toString(), edt_phoneNumber.getText().toString(),"https://firebasestorage.googleapis.com/v0/b/map-82eb0.appspot.com/o/generic-user-purple.png?alt=media&token=21815e8a-2bcd-477a-bf37-f6b382f0c409");
+                                FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
+                                String uid=currentUser.getUid();
+                                DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid);
+                                mDatabase.setValue(user);
                                 sendEmailVerification();
-
                             } else {
                                 dialog.dismiss();
                                 if (password.length() < 6) {
@@ -85,8 +89,6 @@ public class SignUpActivity extends AppCompatActivity {
                         Bundle bundle = new Bundle();
                         bundle.putString("Email",edt_email.getText().toString());
                         bundle.putString("Password",edt_password.getText().toString());
-                        bundle.putString("Name",edt_name.getText().toString());
-                        bundle.putString("Phone",edt_phoneNumber.getText().toString());
                         intent.putExtra("Bundle",bundle);
                         startActivity(intent);
                         finish();

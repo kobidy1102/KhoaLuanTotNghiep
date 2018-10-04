@@ -17,8 +17,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -26,6 +29,7 @@ public class SignInActivity extends AppCompatActivity {
     Button btn_signIn, btn_signUp;
     TextView tv_forgotPw;
     private FirebaseAuth mAuth;
+    Boolean isBlind = false;
 // ...
 
     @Override
@@ -127,8 +131,52 @@ public class SignInActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                dialog.dismiss();
-                                checkEmailValification();
+
+                                ///// đăng nhập kiểm tra có đúng tài khoản người khiếm thị hay không, nếu đúng thì cho phép đăng nhập
+                                DatabaseReference mDatabase;
+                                FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                String uid= mCurrentUser.getUid();
+                                mDatabase = FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Users").child(uid).child("typeUser");
+                                Log.e("abcde", String.valueOf(mDatabase));
+                                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        try {
+                                            String typeUser = dataSnapshot.getValue().toString();
+                                            Log.e("abcde", "type user " + typeUser);
+                                            if ("volunteer".equals(typeUser)) {
+                                                dialog.dismiss();
+                                                isBlind = true;
+                                                Log.e("abcde", "Dang nhap");
+
+
+                                                checkEmailValification();
+                                            } else {
+                                                dialog.dismiss();
+                                                //Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản", Toast.LENGTH_SHORT).show();
+                                                Log.e("abcde", "Lỗi");
+                                                //FirebaseAuth.getInstance().signOut();
+                                            }
+                                        }
+                                        catch (Exception e){
+                                            isBlind = false;
+                                            dialog.dismiss();
+                                            Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản",Toast.LENGTH_SHORT).show();
+                                            FirebaseAuth.getInstance().signOut();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
+
+                                /////
+
+
                             } else {
                                 dialog.dismiss();
                                 Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
@@ -138,7 +186,6 @@ public class SignInActivity extends AppCompatActivity {
                             // ...
                         }
                     });
-
         }
     }
     private void checkEmailValification(){
@@ -146,17 +193,6 @@ public class SignInActivity extends AppCompatActivity {
         Boolean emailFlag = firebaseUser.isEmailVerified();
         if(emailFlag){
             Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-            Bundle bundle = getIntent().getBundleExtra("Bundle");
-            if (bundle != null){
-                User user= new User(bundle.getString("Name"),bundle.getString("Email"), bundle.getString("Phone"),"https://firebasestorage.googleapis.com/v0/b/map-82eb0.appspot.com/o/generic-user-purple.png?alt=media&token=21815e8a-2bcd-477a-bf37-f6b382f0c409");
-                FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
-                String uid=currentUser.getUid();
-                DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Users").child(uid);
-                mDatabase.setValue(user);
-                Status status= new Status("1","1","0");
-                DatabaseReference mDatabase2= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Status").child(uid);
-                mDatabase2.setValue(status);
-            }
             startActivity(new Intent(SignInActivity.this, MainActivity.class));
             finish();
         }else{

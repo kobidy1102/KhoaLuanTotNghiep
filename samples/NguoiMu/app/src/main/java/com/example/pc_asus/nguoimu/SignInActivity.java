@@ -3,6 +3,7 @@ package com.example.pc_asus.nguoimu;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,8 +18,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -27,6 +32,8 @@ public class SignInActivity extends AppCompatActivity {
     TextView tv_forgotPW;
     Button btn_signIn, btn_signUp;
     private FirebaseAuth mAuth;
+    Boolean isBlind = false;
+
 // ...
 
     @Override
@@ -42,13 +49,14 @@ public class SignInActivity extends AppCompatActivity {
         tv_forgotPW = findViewById(R.id.tv_forgotPw);
         mAuth = FirebaseAuth.getInstance();
 
+
+
         Bundle bundle = getIntent().getBundleExtra("Bundle");
         if(bundle != null){
             edt_email.setText(bundle.getString("Email"));
             edt_password.setText(bundle.getString("Password"));
             Log.e("bundle thanh cong","Gia tri");
         }
-
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +78,10 @@ public class SignInActivity extends AppCompatActivity {
                 forgotPW();
             }
         });
+
+        if (!isBlind){
+            FirebaseAuth.getInstance().signOut();
+        };
 
     }
     private void forgotPW() {
@@ -114,20 +126,62 @@ public class SignInActivity extends AppCompatActivity {
         dialog = new ProgressDialog(this);
         dialog.setMessage("loading...");
 
-        String email = edt_email.getText().toString().trim();
+        final String email = edt_email.getText().toString().trim();
         final String password = edt_password.getText().toString().trim();
+
         Log.e("abc",email);
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
         } else {
             dialog.show();
+
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                dialog.dismiss();
-                                checkEmailValification();
+
+                                ///// đăng nhập kiểm tra có đúng tài khoản người khiếm thị hay không, nếu đúng thì cho phép đăng nhập
+                                DatabaseReference mDatabase;
+                                FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                String uid= mCurrentUser.getUid();
+                                mDatabase = FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid).child("typeUser");
+                                Log.e("abcde", String.valueOf(mDatabase));
+                                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        try {
+                                            String typeUser = dataSnapshot.getValue().toString();
+                                            Log.e("abcde", "type user " + typeUser);
+                                            if ("blind".equals(typeUser)) {
+                                                dialog.dismiss();
+                                                isBlind = true;
+                                                Log.e("abcde", "Dang nhap");
+                                                checkEmailValification();
+                                            } else {
+                                                dialog.dismiss();
+                                                //Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản", Toast.LENGTH_SHORT).show();
+                                                Log.e("abcde", "Lỗi");
+                                                //FirebaseAuth.getInstance().signOut();
+                                            }
+                                        }
+                                        catch (Exception e){
+                                            isBlind = false;
+                                            dialog.dismiss();
+                                            Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản",Toast.LENGTH_SHORT).show();
+                                            FirebaseAuth.getInstance().signOut();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                /////
+
+
                             } else {
                                 dialog.dismiss();
                                 Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
@@ -145,14 +199,6 @@ public class SignInActivity extends AppCompatActivity {
         Boolean emailFlag = firebaseUser.isEmailVerified();
         if(emailFlag){
             Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-            Bundle bundle = getIntent().getBundleExtra("Bundle");
-            if (bundle != null){
-                User user= new User(bundle.getString("Name"),bundle.getString("Email"), bundle.getString("Phone"),"https://firebasestorage.googleapis.com/v0/b/map-82eb0.appspot.com/o/generic-user-purple.png?alt=media&token=21815e8a-2bcd-477a-bf37-f6b382f0c409");
-                FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
-                String uid=currentUser.getUid();
-                DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid);
-                mDatabase.setValue(user);
-            }
             startActivity(new Intent(SignInActivity.this, MainActivity.class));
             finish();
         }else{

@@ -287,7 +287,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Uri uri) {
                 photoURL[0]=uri.toString();
-                User user = new User(edt_name.getText().toString(),edt_email.getText().toString(),edt_phoneNumber.getText().toString(),photoURL[0]);
+                User user = new User(edt_name.getText().toString(),edt_email.getText().toString(),edt_phoneNumber.getText().toString(),photoURL[0],SignInActivity.android_id);
                 mDatabase.setValue(user);
                 Log.e("abc","get link xong");
 

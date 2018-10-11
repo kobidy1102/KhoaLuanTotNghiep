@@ -3,17 +3,18 @@ package com.example.pc_asus.tinhnguyenvien;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +33,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
+    Handler mHandler;
     String uid;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,41 +63,47 @@ public class MainActivity extends AppCompatActivity
         final View imgStatusWithFriends =  findViewById(R.id.img_statusWithFriends);
         final View imgStatusWithAll =  findViewById(R.id.img_statusWithAll);
 
+
+
         final int[] status = new int[2];
-
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
-         uid= mCurrentUser.getUid();
-        mDatabase= FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien");
+        if (mCurrentUser == null) {
+            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+            startActivity(intent);
+        } else {
 
-        final ProgressDialog dialog;
-        dialog = new ProgressDialog(this);
-        dialog.setMessage("        Loading...");
-        dialog.show();
+            uid = mCurrentUser.getUid();
+                mDatabase = FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien");
 
-        mDatabase.child("Status").child(uid).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                 String s0= dataSnapshot.child("statusWithFriends").getValue().toString();
-                status[0]=Integer.parseInt(s0);
-                String s1= dataSnapshot.child("statusWithAll").getValue().toString();
-                status[1]=Integer.parseInt(s1);
+                final ProgressDialog dialog;
+                dialog = new ProgressDialog(this);
+                dialog.setMessage("        Loading...");
+                dialog.show();
 
-                if(status[0] ==1) {
-                    imgStatusWithFriends.setBackgroundResource(R.mipmap.tick);
-                }else imgStatusWithFriends.setBackgroundResource(R.mipmap.stop);
+                mDatabase.child("Status").child(uid).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String s0 = dataSnapshot.child("statusWithFriends").getValue().toString();
+                        status[0] = Integer.parseInt(s0);
+                        String s1 = dataSnapshot.child("statusWithAll").getValue().toString();
+                        status[1] = Integer.parseInt(s1);
 
-                if(status[1] ==1) {
-                    imgStatusWithAll.setBackgroundResource(R.mipmap.tick);
-                }else imgStatusWithAll.setBackgroundResource(R.mipmap.stop);
-                dialog.dismiss();
+                        if (status[0] == 1) {
+                            imgStatusWithFriends.setBackgroundResource(R.mipmap.tick);
+                        } else imgStatusWithFriends.setBackgroundResource(R.mipmap.stop);
+
+                        if (status[1] == 1) {
+                            imgStatusWithAll.setBackgroundResource(R.mipmap.tick);
+                        } else imgStatusWithAll.setBackgroundResource(R.mipmap.stop);
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
 
 
         imgStatusWithFriends.setOnClickListener(new View.OnClickListener() {

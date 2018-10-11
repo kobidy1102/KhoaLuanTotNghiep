@@ -2,6 +2,7 @@ package com.example.pc_asus.tinhnguyenvien;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ public class SignInActivity extends AppCompatActivity {
     TextView tv_forgotPw;
     private FirebaseAuth mAuth;
     Boolean isBlind = false;
+    static String android_id ;
 // ...
 
     @Override
@@ -45,6 +47,8 @@ public class SignInActivity extends AppCompatActivity {
         tv_forgotPw = findViewById(R.id.tv_forgotPw);
         mAuth = FirebaseAuth.getInstance();
 
+        android_id = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID);
         Bundle bundle = getIntent().getBundleExtra("Bundle");
         if(bundle != null){
             edt_email.setText(bundle.getString("Email"));
@@ -73,7 +77,9 @@ public class SignInActivity extends AppCompatActivity {
                 forgotPW();
             }
         });
+
     }
+
 
     private void forgotPW() {
         final String userEmail = edt_email.getText().toString().trim();
@@ -123,7 +129,7 @@ public class SignInActivity extends AppCompatActivity {
         final String password = edt_password.getText().toString().trim();
         Log.e("abc",email);
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, "Vui lòng nhập email và mật khẩu", Toast.LENGTH_SHORT).show();
         } else {
             dialog.show();
             mAuth.signInWithEmailAndPassword(email, password)
@@ -133,45 +139,45 @@ public class SignInActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
 
                                 ///// đăng nhập kiểm tra có đúng tài khoản người khiếm thị hay không, nếu đúng thì cho phép đăng nhập
-                                DatabaseReference mDatabase;
+                                final DatabaseReference mDatabase;
                                 FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
                                 String uid= mCurrentUser.getUid();
-                                mDatabase = FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Users").child(uid).child("typeUser");
-                                Log.e("abcde", String.valueOf(mDatabase));
-                                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        try {
-                                            String typeUser = dataSnapshot.getValue().toString();
-                                            Log.e("abcde", "type user " + typeUser);
-                                            if ("volunteer".equals(typeUser)) {
-                                                dialog.dismiss();
-                                                isBlind = true;
-                                                Log.e("abcde", "Dang nhap");
 
 
-                                                checkEmailValification();
-                                            } else {
+                                    mDatabase = FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Users").child(uid);
+                                    Log.e("abcde", String.valueOf(mDatabase));
+                                    mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            try {
+                                                String data = dataSnapshot.getValue().toString();
+                                                if (!data.equals(null)) {
+                                                    dialog.dismiss();
+                                                    isBlind = true;
+                                                    Log.e("abcde", "Dang nhap");
+                                                    mDatabase.child("idDevice").setValue(android_id);
+                                                    checkEmailValification();
+                                                } else {
+                                                    dialog.dismiss();
+                                                    //Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản", Toast.LENGTH_SHORT).show();
+                                                    Log.e("abcde", "Lỗi");
+                                                    //FirebaseAuth.getInstance().signOut();
+                                                }
+                                            }
+                                            catch (Exception e){
+                                                Log.e("abcde", "Khong dang nhap duoc");
+                                                isBlind = false;
                                                 dialog.dismiss();
-                                                //Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản", Toast.LENGTH_SHORT).show();
-                                                Log.e("abcde", "Lỗi");
-                                                //FirebaseAuth.getInstance().signOut();
+                                                Toast.makeText(SignInActivity.this,"Tài khoản hoặc mật khẩu không chính xác",Toast.LENGTH_SHORT).show();
+                                                FirebaseAuth.getInstance().signOut();
                                             }
                                         }
-                                        catch (Exception e){
-                                            isBlind = false;
-                                            dialog.dismiss();
-                                            Toast.makeText(SignInActivity.this,"Vui lòng đăng nhập đúng tài khoản",Toast.LENGTH_SHORT).show();
-                                            FirebaseAuth.getInstance().signOut();
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
                                         }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
+                                    });
 
 
                                 /////
@@ -179,7 +185,7 @@ public class SignInActivity extends AppCompatActivity {
 
                             } else {
                                 dialog.dismiss();
-                                Toast.makeText(SignInActivity.this, "Đăng Nhập Thất Bại", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignInActivity.this, "Sai email hoặc mật khẩu", Toast.LENGTH_SHORT).show();
 
                             }
 

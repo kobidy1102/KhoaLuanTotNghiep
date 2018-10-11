@@ -1,6 +1,7 @@
 package com.example.pc_asus.nguoimu;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity
         final View tvTap = findViewById(R.id.tv_tap);
 
 
-
+        AlarmManager alarmManager;
 
         Intent intent= new Intent(MainActivity.this, CheckOpenAppService.class);
         startService(intent);

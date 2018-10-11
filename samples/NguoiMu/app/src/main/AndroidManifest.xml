@@ -65,6 +65,8 @@
 
         <service android:name=".CheckOpenAppService" />
 
+
+
         <activity android:name=".OpenAppWithVoice"></activity>
     </application>
 

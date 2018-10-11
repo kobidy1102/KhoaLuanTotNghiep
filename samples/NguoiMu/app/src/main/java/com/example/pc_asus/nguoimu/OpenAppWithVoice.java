@@ -2,6 +2,8 @@ package com.example.pc_asus.nguoimu;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +29,15 @@ public class OpenAppWithVoice extends AppCompatActivity implements TextToSpeech.
         tvOpenApp = (TextView)findViewById(R.id.tv_open_app);
 
         tts = new TextToSpeech(this, (TextToSpeech.OnInitListener) this);
-        tts.speak("Nhấp vào màn hình nói Có để mở ứng dụng, nói không để thoát", TextToSpeech.QUEUE_FLUSH, null);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tts.speak("Nhấp vào màn hình nói Có để mở ứng dụng, nói không để thoát", TextToSpeech.QUEUE_FLUSH, null);
+            }
+        }, 1000);
+
         tvOpenApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,7 +72,7 @@ public class OpenAppWithVoice extends AppCompatActivity implements TextToSpeech.
         }
     }
     private void promptSpeechInput() {
-        tts.speak("Nói có để mở ứng dụng, nói không để thoát", TextToSpeech.QUEUE_FLUSH, null);
+    //    tts.speak("Bạn có muốn mở ứng dụng không", TextToSpeech.QUEUE_FLUSH, null);
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         // xac nhan ung dung muon gui yeu cau
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());

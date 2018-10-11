@@ -80,10 +80,13 @@ public class MainActivity extends AppCompatActivity
         final ImageView img = (ImageView) headView.findViewById(R.id.img_bar_avatar);
         final TextView tv_name = (TextView) headView.findViewById(R.id.tv_bar_name);
         final String[] photoURL = new String[1];
-
-
         final View tvTap = findViewById(R.id.tv_tap);
 
+
+
+
+        Intent intent= new Intent(MainActivity.this, CheckOpenAppService.class);
+        startService(intent);
 
         tts = new TextToSpeech(this, this);
 
@@ -91,8 +94,8 @@ public class MainActivity extends AppCompatActivity
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (mCurrentUser == null) {
-            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-            startActivity(intent);
+            Intent intent2 = new Intent(MainActivity.this, SignInActivity.class);
+            startActivity(intent2);
         } else {
             uid = mCurrentUser.getUid();
             mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -234,6 +237,12 @@ public class MainActivity extends AppCompatActivity
     //dialog voice của google
 
     private void promptSpeechInput() {
+        try {
+            tts.speak("Nói kết nối hoặc alo để tìm kiếm giúp đỡ", TextToSpeech.QUEUE_FLUSH, null);
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         // xac nhan ung dung muon gui yeu cau
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
@@ -284,8 +293,6 @@ public class MainActivity extends AppCompatActivity
 
                 }
             }
-
-
 
         }
 

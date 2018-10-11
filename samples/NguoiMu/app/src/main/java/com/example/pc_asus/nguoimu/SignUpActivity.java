@@ -59,7 +59,7 @@ public class SignUpActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 dialog.dismiss();
-                                User user= new User(edt_name.getText().toString(),edt_email.getText().toString(), edt_phoneNumber.getText().toString(),"https://firebasestorage.googleapis.com/v0/b/map-82eb0.appspot.com/o/generic-user-purple.png?alt=media&token=21815e8a-2bcd-477a-bf37-f6b382f0c409");
+                                User user= new User(edt_name.getText().toString(),edt_email.getText().toString(), edt_phoneNumber.getText().toString(),"https://firebasestorage.googleapis.com/v0/b/map-82eb0.appspot.com/o/generic-user-purple.png?alt=media&token=21815e8a-2bcd-477a-bf37-f6b382f0c409","");
                                 FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
                                 String uid=currentUser.getUid();
                                 DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference().child("NguoiMu").child("Users").child(uid);

@@ -1,22 +1,18 @@
 package com.example.pc_asus.tinhnguyenvien;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.app.KeyguardManager;
 import android.app.Service;
-import android.app.admin.DevicePolicyManager;
-import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.PowerManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,10 +23,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class CheckConnectionService extends Service {
-    private DatabaseReference mDatabase;
+public class CheckConnectionService extends Service implements SensorEventListener {
+    private DatabaseReference mDatabase, mDatabase2;
     private FirebaseUser mCurrentUser;
     public static  String keyRoomVideoChat;
+    static int CHECK_DEVICE_LOGIN = 0511;
+    Handler mhanler;
     MediaPlayer mediaPlayer;
      String uid;
     @Nullable
@@ -81,9 +79,42 @@ public class CheckConnectionService extends Service {
 
             }
         });
+        ///So sánh id android hiện tại và
+            mDatabase2 = FirebaseDatabase.getInstance().getReference().child("TinhNguyenVien").child("Users").child(uid).child("idDevice");
+            mDatabase2.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String android_id = Settings.Secure.getString(getContentResolver(),
+                            Settings.Secure.ANDROID_ID);
+                    String TNV_id_Login = dataSnapshot.getValue().toString();
+                    if (!TNV_id_Login.equals(android_id)) {
+                        FirebaseAuth.getInstance().signOut();
+                        //startActivity(new Intent(getApplicationContext(),SignInActivity.class));
+                        Intent dialogIntent = new Intent(CheckConnectionService.this, SignInActivity.class);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(dialogIntent);
+                        Log.e("abcde","ket qua "+ TNV_id_Login.equals(android_id));
+                        Toast.makeText(CheckConnectionService.this,"Tài khoản được đăng nhập ở một thiết bị khác",Toast.LENGTH_LONG).show();
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
 
         return super.onStartCommand(intent, flags, startId);
     }
 
 
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
 }

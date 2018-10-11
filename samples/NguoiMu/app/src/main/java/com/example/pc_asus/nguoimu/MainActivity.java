@@ -237,12 +237,12 @@ public class MainActivity extends AppCompatActivity
     //dialog voice của google
 
     private void promptSpeechInput() {
-        try {
-            tts.speak("Nói kết nối hoặc alo để tìm kiếm giúp đỡ", TextToSpeech.QUEUE_FLUSH, null);
-            Thread.sleep(800);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            tts.speak("Nói kết nối hoặc alo để tìm kiếm giúp đỡ", TextToSpeech.QUEUE_FLUSH, null);
+//            Thread.sleep(800);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         // xac nhan ung dung muon gui yeu cau
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());

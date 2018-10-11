@@ -108,9 +108,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         //TODO
      //   CheckConnectionService.keyRoomVideoChat = "D79LimcFQNOkz1gVuok3lQtQDhy1";
 
-        mDatabase.child("NguoiMu").child("Location").child(CheckConnectionService.keyRoomVideoChat).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("NguoiMu").child("Location").child(VideoCallActivity.key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.e("abc",VideoCallActivity.key + " aaaa");
                 String latitude = dataSnapshot.child("latitude").getValue().toString();
                 String longitude = dataSnapshot.child("longitude").getValue().toString();
                 int direction = Integer.parseInt(dataSnapshot.child("direction").getValue().toString());

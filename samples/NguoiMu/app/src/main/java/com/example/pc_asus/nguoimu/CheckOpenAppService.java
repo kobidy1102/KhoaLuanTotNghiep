@@ -75,7 +75,10 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
                         i=0;
                         Toast.makeText(CheckOpenAppService.this,"Dang mo app",Toast.LENGTH_LONG).show();
                         Log.e("abc","mở activity");
-                        startActivity(new Intent(CheckOpenAppService.this,OpenAppWithVoice.class));
+                        Intent intent1 = new Intent(CheckOpenAppService.this,OpenAppWithVoice.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent1);
+
                     }else if(i==1){
 
                         final Handler handler = new Handler();

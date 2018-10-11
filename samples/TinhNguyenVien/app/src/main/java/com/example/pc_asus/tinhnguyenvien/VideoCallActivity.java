@@ -1,6 +1,7 @@
 package com.example.pc_asus.tinhnguyenvien;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +33,7 @@ public class VideoCallActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
     String uid;
+    public static String key;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -66,6 +69,7 @@ public class VideoCallActivity extends AppCompatActivity {
 //            mViewPager.setCurrentItem(1);
 //            startFragment=0;
 //        }
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -77,6 +81,11 @@ public class VideoCallActivity extends AppCompatActivity {
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
         uid= mCurrentUser.getUid();
         mDatabase= FirebaseDatabase.getInstance().getReference();
+
+
+        Intent intent = getIntent();
+        key = intent.getStringExtra("key");
+        Log.e("abc",key+" videocallactivity....");
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|

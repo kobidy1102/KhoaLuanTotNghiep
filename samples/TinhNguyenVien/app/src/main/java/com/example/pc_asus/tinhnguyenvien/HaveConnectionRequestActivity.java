@@ -39,6 +39,7 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
     String uid;
     private int checkStartCall=0;
      String sttFriends,sttAll;
+     String getKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,13 +80,20 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         uid= mCurrentUser.getUid();
         mDatabase= FirebaseDatabase.getInstance().getReference();
 
-
+        getKey=CheckConnectionService.keyRoomVideoChat;
+        Log.e("abc",getKey + "  getkey 1");
      //   getStatus();
 
         mDatabase.child("NguoiMu").child("Users").child(CheckConnectionService.keyRoomVideoChat).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e("abc",""+CheckConnectionService.keyRoomVideoChat);
+                Log.e("abc",""+CheckConnectionService.keyRoomVideoChat +"............have connect");
+
+//                Intent i = new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class);
+//                i.putExtra("key",CheckConnectionService.keyRoomVideoChat);
+
+
+
                 String name= dataSnapshot.child("name").getValue().toString();
                 String avatarLink= dataSnapshot.child("photoURL").getValue().toString();
 
@@ -127,12 +135,14 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 checkStartCall=2;
-
-                startActivity(new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class));
+                Intent i = new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class);
+                i.putExtra("key",getKey);
+                Log.e("abc",getKey + " getkey 2");
+                startActivity(i);
 
                 mediaPlayer.stop();
                 vibrator.cancel();
-                finish();
+               finish();
             }
         });
 

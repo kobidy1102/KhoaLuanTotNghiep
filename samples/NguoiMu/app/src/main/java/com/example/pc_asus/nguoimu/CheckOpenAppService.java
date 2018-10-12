@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 public class CheckOpenAppService extends Service implements SensorEventListener{
@@ -48,8 +49,12 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
             mSensorMgr.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
+
+
         return START_STICKY;
     }
+
+
 
 
     @Override
@@ -75,12 +80,8 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
                         i=0;
                         Toast.makeText(CheckOpenAppService.this,"Dang mo app",Toast.LENGTH_LONG).show();
                         Log.e("abc","mở activity");
-<<<<<<< HEAD
-                        Intent intent1 = new Intent(CheckOpenAppService.this,OpenAppWithVoice.class);
-=======
 
-                        Intent intent1 = new Intent(CheckOpenAppService.this, OpenAppWithVoice.class);
->>>>>>> 16bdc7a5e8ba29d780cb6171c50b00aa059b1750
+                        Intent intent1 = new Intent(CheckOpenAppService.this, MainActivity.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent1);
 
@@ -104,4 +105,6 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+
 }

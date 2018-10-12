@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -28,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -84,12 +86,22 @@ public class MainActivity extends AppCompatActivity
         final View tvTap = findViewById(R.id.tv_tap);
 
 
-        AlarmManager alarmManager;
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+//                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+//                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
+//                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-        Intent intent= new Intent(MainActivity.this, CheckOpenAppService.class);
-        startService(intent);
+
 
         tts = new TextToSpeech(this, this);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tts.speak("Chạm vào màn hình để ra lệnh", TextToSpeech.QUEUE_FLUSH,null);
+            }
+        }, 1000);
 
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -124,10 +136,28 @@ public class MainActivity extends AppCompatActivity
             });
 
 
+            final int[] demTap = {0};
+
             tvTap.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    promptSpeechInput();
+                    demTap[0]++;
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                           if(demTap[0] ==1){
+                               promptSpeechInput();
+                           }else if(demTap[0] ==2){
+                               tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH,null);
+                               startActivity(new Intent(MainActivity.this, VideoCallViewActivity.class));
+                           }
+
+                           demTap[0] =0;
+                        }
+                    }, 1000);
+
                 }
             });
         }

@@ -547,11 +547,7 @@ public class VideoCallViewActivity extends AppCompatActivity implements  TextToS
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-<<<<<<< HEAD
-                                        Log.e("abc","da delay 5s");
-=======
                                         Log.e("abc"," delay 5s xong ....................");
->>>>>>> 16bdc7a5e8ba29d780cb6171c50b00aa059b1750
                                         checkStatusOfDevice();
 
                                     }

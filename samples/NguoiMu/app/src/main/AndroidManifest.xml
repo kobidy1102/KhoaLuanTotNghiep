@@ -65,9 +65,13 @@
 
         <service android:name=".CheckOpenAppService" />
 
+        <receiver android:name=".CheckPressVolumReceiver" >
+            <intent-filter>
+                <action android:name="android.media.VOLUME_CHANGED_ACTION" />
+            </intent-filter>
+        </receiver>
 
 
-        <activity android:name=".OpenAppWithVoice"></activity>
     </application>
 
 </manifest>

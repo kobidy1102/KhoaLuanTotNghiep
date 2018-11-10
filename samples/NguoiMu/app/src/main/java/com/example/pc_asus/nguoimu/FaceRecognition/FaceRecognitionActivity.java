@@ -16,8 +16,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.pc_asus.nguoimu.AppUtil;
 import com.example.pc_asus.nguoimu.FaceRecognition.liveVideo.FaceTrackerActivity;
 import com.example.pc_asus.nguoimu.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -106,7 +109,7 @@ public class FaceRecognitionActivity extends AppCompatActivity {
                         .build();
                 API api= retrofit.create(API.class);
 
-                call= api.recognitionFace("kpop",body);
+                call= api.recognitionFace(AppUtil.getUidLowerCase(),body);
 
                 call.enqueue(new Callback<String>() {
                     @Override
@@ -118,7 +121,7 @@ public class FaceRecognitionActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
-                        Log.e("abc","lỗi ");
+                        Log.e("abc","lỗi "+" "+t.getMessage());
                         Toast.makeText(FaceRecognitionActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -145,6 +148,16 @@ public class FaceRecognitionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(FaceRecognitionActivity.this, FaceTrackerActivity.class));
+            }
+        });
+
+
+
+        Button btnCreatePersonGroup= findViewById(R.id.btn_createPersonGroup);
+        btnCreatePersonGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createPersonGroup();
             }
         });
 
@@ -222,5 +235,65 @@ public class FaceRecognitionActivity extends AppCompatActivity {
         return imageFile;
     }
 
+
+
+
+    private  void deletePerson(){
+
+        FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String uid= mCurrentUser.getUid();
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API.Base_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        final API api = retrofit.create(API.class);
+
+        Call<String> call = api.deletePerson(uid,"personid");
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Log.e("abc", "result=" + response.body());
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("abc", "lỗi cteate personGroup");
+            }
+        });
+    }
+
+
+
+    private  void createPersonGroup(){
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API.Base_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        final API api = retrofit.create(API.class);
+
+        Call<String> call = api.createPersonGroup(AppUtil.getUidLowerCase(),AppUtil.getUidLowerCase());
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                Toast.makeText(FaceRecognitionActivity.this, ""+response.body(), Toast.LENGTH_SHORT).show();
+                Log.e("abc", "result=" + response.body());
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(FaceRecognitionActivity.this, "Lỗi "+t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("abc", "lỗi cteate personGroup");
+            }
+        });
+    }
 }
 

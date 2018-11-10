@@ -19,9 +19,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.pc_asus.nguoimu.FaceRecognition.API;
-import com.example.pc_asus.nguoimu.FaceRecognition.AppUtil;
+import com.example.pc_asus.nguoimu.AppUtil;
 import com.example.pc_asus.nguoimu.R;
-import com.example.pc_asus.nguoimu.FaceRecognition.liveVideo.CameraSourcePreview;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;

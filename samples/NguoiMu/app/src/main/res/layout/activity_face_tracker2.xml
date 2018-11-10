@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.pc_asus.testconnectwebapi.liveVideo.CameraSourcePreview
+    <com.example.pc_asus.nguoimu.FaceRecognition.liveVideo.CameraSourcePreview
         android:id="@+id/cameraSource"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    </com.example.pc_asus.testconnectwebapi.liveVideo.CameraSourcePreview>
+    </com.example.pc_asus.nguoimu.FaceRecognition.liveVideo.CameraSourcePreview>
 
     <ImageView
         android:id="@+id/img_face_detect"

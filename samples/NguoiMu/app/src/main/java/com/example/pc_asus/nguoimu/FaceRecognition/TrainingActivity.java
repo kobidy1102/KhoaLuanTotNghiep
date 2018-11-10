@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,15 +21,24 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.pc_asus.nguoimu.AppUtil;
+import com.example.pc_asus.nguoimu.Model.PersonTraining;
 import com.example.pc_asus.nguoimu.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.PicassoEngine;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -52,6 +62,13 @@ public class TrainingActivity extends AppCompatActivity {
      int i=0;
     private ProgressDialog dialog;
      API api;
+
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+
+    final StorageReference storageRef = storage.getReference();
+   // private DatabaseReference mDatabase;
+  //  private FirebaseUser mCurrentUser;
+  //  String uid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +76,11 @@ public class TrainingActivity extends AppCompatActivity {
 
         ImageView btn_addImage= findViewById(R.id.img_train_addImage);
         edt_name= findViewById(R.id.edt_train_name);
+
+     //   mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
+    //   uid = mCurrentUser.getUid();
+     //   mDatabase= FirebaseDatabase.getInstance().getReference();
+
 
         btn_addImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,13 +150,13 @@ public class TrainingActivity extends AppCompatActivity {
 
         final API api = retrofit.create(API.class);
 
-        call = api.addPersontoGroup("kpop",edt_name.getText().toString().trim());
+        call = api.addPersontoGroup(AppUtil.getUidLowerCase(),edt_name.getText().toString().trim());
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
 
-                Toast.makeText(TrainingActivity.this, "Add person complete: "+response.body(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TrainingActivity.this, ""+response.body(), Toast.LENGTH_SHORT).show();
                 Log.e("abc", "result=" + response.body());
 
                     addFaceToPerson(response.body());                      ///////////////////
@@ -161,7 +183,7 @@ public class TrainingActivity extends AppCompatActivity {
 
         final API api = retrofit.create(API.class);
 
-        call = api.addFaceToPerson("kpop",personId,body);
+        call = api.addFaceToPerson(AppUtil.getUidLowerCase(),personId,body);
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -170,19 +192,26 @@ public class TrainingActivity extends AppCompatActivity {
                 Toast.makeText(TrainingActivity.this, response.body() + " "+(i+1), Toast.LENGTH_SHORT).show();
                 Log.e("abc", "result=" + response.body());
 
+                if(response.body().contains("error")){
+                    Toast.makeText(TrainingActivity.this, "Vui lòng thử lại", Toast.LENGTH_SHORT).show();
+                    return;
+                }else {
+                    i++;
+                    if (i < arrBitMapImage.size()) {
+                        addFaceToPerson(personId);                              ///////////////////////////
+                    } else {
+                        trainingPerson();
 
-                i++;
-                if(i<arrBitMapImage.size()) {
-                    addFaceToPerson(personId);                              ///////////////////////////
-                }else{
-                    trainingPerson();
+                        upLoadimage(arrBitMapImage.get(0),personId);
+
+                        //TODO lưu person lên firebase.
+                    }
                 }
-
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Log.e("abc", "lỗi add face ");
+                Log.e("abc", "lỗi add face "+t.getMessage());
                 Toast.makeText(TrainingActivity.this, "Lỗi add face", Toast.LENGTH_SHORT).show();
             }
         });
@@ -199,7 +228,7 @@ public class TrainingActivity extends AppCompatActivity {
         api= retrofit.create(API.class);
         // api.personName=edt_name.getText().toString().trim();
 
-        call= api.trainingPerson("kpop");
+        call= api.trainingPerson(AppUtil.getUidLowerCase());
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -294,9 +323,59 @@ public class TrainingActivity extends AppCompatActivity {
 
 
 
+    private void upLoadimage(Bitmap bitmap, final String personId){
+//        final ProgressDialog dialog;
+//        dialog = new ProgressDialog(TrainingActivity.this);
+//        dialog.setMessage("      Đang lưu...");
+//        dialog.setCancelable(false);
+//        dialog.show();
+        Calendar calendar = Calendar.getInstance();
+       final String nameImg="img"+calendar.getTimeInMillis()+".png";
+
+        StorageReference mountainsRef = storageRef.child(nameImg);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = mountainsRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(TrainingActivity.this, "Lỗi!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(TrainingActivity.this, "Đã lưu!", Toast.LENGTH_SHORT).show();
+               // dialog.dismiss();
+                Log.e("abc","upload xong");
+                getLinkImage(nameImg,personId);
+
+            }
+
+        });
+    }
 
 
+    private void getLinkImage(String nameImg, final String personId){
+        Log.e("abc","getlink");
+        storageRef.child(nameImg).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
 
+                //add to firebase
+                PersonTraining personTraining= new PersonTraining(edt_name.getText().toString().trim(),personId,uri.toString());
+                AppUtil.getmDatabase().child("NguoiMu").child("Training").child(AppUtil.getUid()).push().setValue(personTraining);
+                Log.e("abc","get link xong");
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+            }
+        });
+
+    }
 
 
 }

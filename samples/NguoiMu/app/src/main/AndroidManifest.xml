@@ -74,6 +74,13 @@
             android:name=".PlacesOftenCome.PlacesOftenComeActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".FaceRecognition.TrainingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FaceRecognition.liveVideo.FaceTrackerActivity"
+            android:screenOrientation="portrait" />
+
         <service android:name=".CheckOpenApp.CheckOpenAppService" />
 
         <receiver android:name=".CheckOpenApp.CheckPressVolumReceiver">

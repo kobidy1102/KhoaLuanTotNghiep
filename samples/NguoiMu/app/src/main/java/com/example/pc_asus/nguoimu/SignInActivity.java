@@ -193,6 +193,8 @@ public class SignInActivity extends AppCompatActivity {
 
         }
     }
+
+
     private void checkEmailValification(){
         FirebaseUser firebaseUser = mAuth.getInstance().getCurrentUser();
         Boolean emailFlag = firebaseUser.isEmailVerified();

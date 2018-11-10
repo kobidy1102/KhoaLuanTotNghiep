@@ -1,21 +1,17 @@
-package com.example.pc_asus.nguoimu;
-import android.annotation.SuppressLint;
+package com.example.pc_asus.nguoimu.CheckOpenApp;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorEventListener2;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.pc_asus.nguoimu.MainActivity;
 
 public class CheckOpenAppService extends Service implements SensorEventListener{
 
@@ -40,6 +36,17 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
 //           Sensor s = sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 //        sManager.registerListener(this, s, SensorManager.SENSOR_DELAY_NORMAL);
 
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+               try{
+                   stopSelf();
+               }catch (Exception e){e.getMessage();}
+            }
+        }, 5000);
+
+
         mSensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         // Listen for shakes
@@ -48,8 +55,12 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
             mSensorMgr.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
+
+
         return START_STICKY;
     }
+
+
 
 
     @Override
@@ -75,12 +86,8 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
                         i=0;
                         Toast.makeText(CheckOpenAppService.this,"Dang mo app",Toast.LENGTH_LONG).show();
                         Log.e("abc","mở activity");
-<<<<<<< HEAD
-                        Intent intent1 = new Intent(CheckOpenAppService.this,OpenAppWithVoice.class);
-=======
 
-                        Intent intent1 = new Intent(CheckOpenAppService.this, OpenAppWithVoice.class);
->>>>>>> 16bdc7a5e8ba29d780cb6171c50b00aa059b1750
+                        Intent intent1 = new Intent(CheckOpenAppService.this, MainActivity.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent1);
 
@@ -104,4 +111,6 @@ public class CheckOpenAppService extends Service implements SensorEventListener{
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+
 }

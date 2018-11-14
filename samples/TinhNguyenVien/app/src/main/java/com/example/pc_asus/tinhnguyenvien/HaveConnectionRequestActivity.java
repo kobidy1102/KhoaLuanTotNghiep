@@ -135,7 +135,8 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 checkStartCall=2;
-                Intent i = new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class);
+              //  Intent i = new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class);
+                Intent i = new Intent(HaveConnectionRequestActivity.this,VideoCallAndMapActivity.class);
                 i.putExtra("key",getKey);
                 Log.e("abc",getKey + " getkey 2");
                 startActivity(i);

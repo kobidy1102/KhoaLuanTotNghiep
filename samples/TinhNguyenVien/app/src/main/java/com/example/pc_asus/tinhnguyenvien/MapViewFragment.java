@@ -84,6 +84,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     int showListPlace;
     DirectionA d= new DirectionA();
 
+    String key="TYZgMCyORxUI8JEj5XNjAH1pV8i2";
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup
@@ -108,10 +110,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         //TODO
      //   CheckConnectionService.keyRoomVideoChat = "D79LimcFQNOkz1gVuok3lQtQDhy1";
 
-        mDatabase.child("NguoiMu").child("Location").child(VideoCallActivity.key).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("NguoiMu").child("Location").child(key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e("abc",VideoCallActivity.key + " aaaa");
+                Log.e("abc",key + " aaaa");
                 String latitude = dataSnapshot.child("latitude").getValue().toString();
                 String longitude = dataSnapshot.child("longitude").getValue().toString();
                 int direction = Integer.parseInt(dataSnapshot.child("direction").getValue().toString());
@@ -208,7 +210,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 arrFriends.clear();
 
 
-                mDatabase.child("NguoiMu").child("PlacesOftenCome").child(CheckConnectionService.keyRoomVideoChat).addChildEventListener(new ChildEventListener() {
+                mDatabase.child("NguoiMu").child("PlacesOftenCome").child(key).addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         arrFriends.add(dataSnapshot.child("namePlace").getValue().toString());

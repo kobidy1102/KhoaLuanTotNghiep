@@ -63,6 +63,16 @@ public class MainActivity extends AppCompatActivity
         final View imgStatusWithFriends =  findViewById(R.id.img_statusWithFriends);
         final View imgStatusWithAll =  findViewById(R.id.img_statusWithAll);
 
+        final View btnStartActivity =  findViewById(R.id.btn_start_activity);
+
+        btnStartActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,VideoCallAndMapActivity.class));
+            }
+        });
+
+
 
 
         final int[] status = new int[2];

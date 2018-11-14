@@ -27,4 +27,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:color/transparent" />
+    <Button
+        android:id="@+id/btn_start_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="start activity"/>
 </android.support.constraint.ConstraintLayout>

@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.pc_asus.tinhnguyenvien">
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
@@ -27,14 +28,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/map_api_key"/>
+            android:value="@string/map_api_key" />
 
         <activity
-            android:screenOrientation="portrait"
-            android:name=".SignInActivity">
+            android:name=".SignInActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,33 +42,37 @@
             </intent-filter>
         </activity>
         <activity
-            android:screenOrientation="portrait"
-            android:name=".SignUpActivity" />
+            android:name=".SignUpActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".AccountSettingsActivity" />
+            android:name=".AccountSettingsActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".MainActivity"
             android:label="      Màn Hình Chính"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name=".CheckConnectionService" />
 
         <activity
-            android:screenOrientation="portrait"
-            android:name=".HaveConnectionRequestActivity" />
+            android:name=".HaveConnectionRequestActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".VideoCallActivity"
             android:label="@string/title_activity_video_call"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <receiver android:name=".AutoStartReceiver" >
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <receiver android:name=".AutoStartReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".VideoCallAndMapActivity"></activity>
     </application>
 
 </manifest>

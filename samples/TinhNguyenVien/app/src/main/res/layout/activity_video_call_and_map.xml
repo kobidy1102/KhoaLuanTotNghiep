@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".VideoCallAndMapActivity">
+
+    <fragment
+        android:id="@+id/testFragment"
+        android:name="com.example.pc_asus.tinhnguyenvien.VideoCallViewFragment"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"/>
+    <!--<fragment-->
+        <!--android:id="@+id/fragment"-->
+        <!--android:name="com.example.pc_asus.tinhnguyenvien.VideoCallViewFragment"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="250dp" />-->
+
+    <View
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <fragment
+        android:id="@+id/fragment2"
+        android:name="com.example.pc_asus.tinhnguyenvien.MapViewFragment"
+        android:layout_width="match_parent"
+        android:layout_height="250dp" />
+
+</LinearLayout>

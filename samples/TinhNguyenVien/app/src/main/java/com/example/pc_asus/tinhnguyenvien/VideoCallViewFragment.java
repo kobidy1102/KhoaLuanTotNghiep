@@ -31,8 +31,10 @@ public class VideoCallViewFragment  extends Fragment{
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
         View view;
+
+    String key="TYZgMCyORxUI8JEj5XNjAH1pV8i2";
        // VideoCallActivity activity;
-    private static final String LOG_TAG = VideoCallActivity.class.getSimpleName();
+    private static final String LOG_TAG = VideoCallAndMapActivity.class.getSimpleName();
 
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
     private static final int PERMISSION_REQ_ID_CAMERA = PERMISSION_REQ_ID_RECORD_AUDIO + 1;
@@ -195,7 +197,7 @@ public class VideoCallViewFragment  extends Fragment{
 
     // Tutorial Step 4
     private void joinChannel() {
-        mRtcEngine.joinChannel(null, CheckConnectionService.keyRoomVideoChat, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+        mRtcEngine.joinChannel(null, key, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
     }
 
     // Tutorial Step 5

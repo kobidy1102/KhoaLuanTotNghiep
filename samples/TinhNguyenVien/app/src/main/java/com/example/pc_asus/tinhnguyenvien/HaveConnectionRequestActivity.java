@@ -39,7 +39,8 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
     String uid;
     private int checkStartCall=0;
      String sttFriends,sttAll;
-     String getKey;
+    // String getKey;
+     String key="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,19 +81,12 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
         uid= mCurrentUser.getUid();
         mDatabase= FirebaseDatabase.getInstance().getReference();
 
-        getKey=CheckConnectionService.keyRoomVideoChat;
-        Log.e("abc",getKey + "  getkey 1");
-     //   getStatus();
+        key=CheckConnectionService.keyRoomVideoChat;
+        Log.e("abc","key ......." + key);
 
-        mDatabase.child("NguoiMu").child("Users").child(CheckConnectionService.keyRoomVideoChat).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("NguoiMu").child("Users").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e("abc",""+CheckConnectionService.keyRoomVideoChat +"............have connect");
-
-//                Intent i = new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class);
-//                i.putExtra("key",CheckConnectionService.keyRoomVideoChat);
-
-
 
                 String name= dataSnapshot.child("name").getValue().toString();
                 String avatarLink= dataSnapshot.child("photoURL").getValue().toString();
@@ -105,7 +99,6 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
                 Glide.with(getApplicationContext())
                         .load(avatarLink)
                         .apply(requestOptions)
-                        //   .override(200,150)
                         .into(imgAvatar);
 
             }
@@ -137,8 +130,8 @@ public class HaveConnectionRequestActivity extends AppCompatActivity {
                 checkStartCall=2;
               //  Intent i = new Intent(HaveConnectionRequestActivity.this,VideoCallActivity.class);
                 Intent i = new Intent(HaveConnectionRequestActivity.this,VideoCallAndMapActivity.class);
-                i.putExtra("key",getKey);
-                Log.e("abc",getKey + " getkey 2");
+                i.putExtra("key",key);
+                Log.e("abc",key + " getkey 2");
                 startActivity(i);
 
                 mediaPlayer.stop();

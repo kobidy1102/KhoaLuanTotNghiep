@@ -41,8 +41,6 @@ public class CheckConnectionService extends Service implements SensorEventListen
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-      //  mediaPlayer= MediaPlayer.create(this,R.raw.ringtone);
-      //  mediaPlayer.start();
         Log.e("abc","start service...");
         mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
          uid= mCurrentUser.getUid();
@@ -59,12 +57,6 @@ public class CheckConnectionService extends Service implements SensorEventListen
                    // if(keyRoomVideoChat.isEmpty()){ //#0 và #1 rồi
                         mDatabase.child("checkStatusDevice").setValue(1);
                 //    }
-                  // sáng màn hình
-//                    PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-//                    final PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
-//                            | PowerManager.ACQUIRE_CAUSES_WAKEUP
-//                            | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
-//                    wakeLock.acquire(30000); //30s sẽ tắt
 
 
                     Intent intent1 = new Intent(CheckConnectionService.this, HaveConnectionRequestActivity.class);

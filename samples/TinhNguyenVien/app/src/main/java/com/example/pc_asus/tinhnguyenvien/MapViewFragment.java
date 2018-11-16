@@ -1,23 +1,12 @@
 package com.example.pc_asus.tinhnguyenvien;
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,26 +15,21 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pc_asus.Modules.DirectionFinder;
-import com.example.pc_asus.Modules.DirectionFinderListener;
-import com.example.pc_asus.Modules.Route;
+import com.example.pc_asus.tinhnguyenvien.FindDirection.DirectionFinder;
+import com.example.pc_asus.tinhnguyenvien.FindDirection.DirectionFinderListener;
+import com.example.pc_asus.tinhnguyenvien.FindDirection.Route;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -63,8 +47,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.content.Context.SENSOR_SERVICE;
 
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
@@ -84,7 +66,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     int showListPlace;
     DirectionA d= new DirectionA();
 
-    String key="TYZgMCyORxUI8JEj5XNjAH1pV8i2";
+    String key="";
 
     @Nullable
     @Override
@@ -93,7 +75,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
 
         view = inflater.inflate(R.layout.fragment_map_view, container, false);
-        Log.e("abc", "camera");
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_map);
@@ -102,6 +83,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             mapFragment.getMapAsync(this);
         }
 
+        key= VideoCallAndMapActivity.key;
+        Log.e("abc","key map Fragment "+key);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         final String uid = mCurrentUser.getUid();

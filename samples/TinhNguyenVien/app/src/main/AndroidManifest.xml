@@ -58,11 +58,7 @@
         <activity
             android:name=".HaveConnectionRequestActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".VideoCallActivity"
-            android:label="@string/title_activity_video_call"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+
 
         <receiver android:name=".AutoStartReceiver">
             <intent-filter>
@@ -72,7 +68,10 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".VideoCallAndMapActivity"></activity>
+        <activity
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".VideoCallAndMapActivity"></activity>
     </application>
 
 </manifest>

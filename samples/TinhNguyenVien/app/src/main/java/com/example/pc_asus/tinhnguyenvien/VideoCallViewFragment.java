@@ -32,7 +32,7 @@ public class VideoCallViewFragment  extends Fragment{
     private FirebaseUser mCurrentUser;
         View view;
 
-    String key="TYZgMCyORxUI8JEj5XNjAH1pV8i2";
+    String key="";
        // VideoCallActivity activity;
     private static final String LOG_TAG = VideoCallAndMapActivity.class.getSimpleName();
 
@@ -78,10 +78,15 @@ public class VideoCallViewFragment  extends Fragment{
         view = inflater.inflate(R.layout.fragment_video_call_view, container, false);
             //Log.e("abc", "camera");
 
+            key=VideoCallAndMapActivity.key;
+
+            Log.e("abc","key videocall Fragment "+key);
 
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO, PERMISSION_REQ_ID_RECORD_AUDIO) && checkSelfPermission(Manifest.permission.CAMERA, PERMISSION_REQ_ID_CAMERA)) {
                 initAgoraEngineAndJoinChannel();
             }
+
+
 
             mCurrentUser= FirebaseAuth.getInstance().getCurrentUser();
             final String uid= mCurrentUser.getUid();
@@ -197,6 +202,7 @@ public class VideoCallViewFragment  extends Fragment{
 
     // Tutorial Step 4
     private void joinChannel() {
+
         mRtcEngine.joinChannel(null, key, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
     }
 

@@ -1,4 +1,4 @@
-package com.example.pc_asus.tinhnguyenvien;
+package com.example.pc_asus.tinhnguyenvien.Model;
 
 public class User {
     public String name;

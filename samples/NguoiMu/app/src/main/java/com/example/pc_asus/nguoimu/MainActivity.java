@@ -141,11 +141,14 @@ public class MainActivity extends AppCompatActivity
                             } else if (demTap[0] == 2) {
                                 tts.speak("đang kết nối, vui lòng chờ", TextToSpeech.QUEUE_FLUSH, null);
                                 startActivity(new Intent(MainActivity.this, VideoCallViewActivity.class));
+                            }else if (demTap[0] == 3) {
+                                tts.speak("hướng camera về phía người cần nhận diện", TextToSpeech.QUEUE_FLUSH, null);
+                                startActivity(new Intent(MainActivity.this, FaceTrackerActivity.class));
                             }
 
                             demTap[0] = 0;
                         }
-                    }, 1000);
+                    }, 1500);
 
                 }
             });

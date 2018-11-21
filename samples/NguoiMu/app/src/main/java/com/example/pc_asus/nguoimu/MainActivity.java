@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.pc_asus.nguoimu.CheckOpenApp.CheckOpenAppService;
 import com.example.pc_asus.nguoimu.FaceRecognition.FaceRecognitionActivity;
 import com.example.pc_asus.nguoimu.FaceRecognition.ListTrainedActivity;
 import com.example.pc_asus.nguoimu.FaceRecognition.liveVideo.FaceTrackerActivity;
@@ -74,6 +75,11 @@ public class MainActivity extends AppCompatActivity
 //                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
 //                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
 //                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
+
+       // Intent intent= new Intent(MainActivity.this, CheckOpenAppService.class);
+      //  stopService(intent);
+
 
 
         tts = new TextToSpeech(this, this);
